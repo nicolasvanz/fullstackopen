@@ -1,5 +1,7 @@
+import React from "react";
+
 const Header = (props) => {  
-  return <h1>{props.course}</h1>
+  return <h1>{props.course.name}</h1>
 }
 
 const Part  = (props) => {
@@ -7,35 +9,48 @@ const Part  = (props) => {
 }
 
 const Content = (props) => {
-  const titles = props.titles
-  const exercises = props.exercises
-  return (
-    <>
-      <Part title={titles[0]} exercises={exercises[0]} />
-      <Part title={titles[1]} exercises={exercises[1]} />
-      <Part title={titles[2]} exercises={exercises[2]} />
-    </>
-  )
+  return (<>
+      {
+        props.parts.map((item, key) =>
+         <Part
+          key={key}
+          title={item.name}
+          exercises={item.exercises}
+        />
+        )
+      }
+  </>)
 }
 
 const Total = (props) => {
-  return <p>Number of exercises {props.exercises}</p>
+  return <p>Number of exercises {props.parts.map(item => item.exercises).reduce(
+    (acc, curr) => acc + curr, 0
+  )}</p>
 }
 
 const App = () => {
-  const course = "Half stack application development"
-  const part1 = "Fundamentals of React"
-  const exercises1 = 10
-  const part2 = "Using props to pass data"
-  const exercises2 = 7
-  const part3 = "State of a component"
-  const exercises3 = 14
-  
+  const course = {
+      name: "Half stack application development",
+      parts: [
+      {
+        name: "Fundamentals of React",
+        exercises: 10
+      },
+      {
+        name: "Using props to pass data",
+        exercises: 7
+      },
+      {
+        name: "State of a component",
+        exercises: 14
+      }
+    ]
+  }
   return (
     <>
       <Header course={course} />
-      <Content titles={[part1, part2, part3]} exercises={[exercises1, exercises2, exercises3]}/>
-      <Total exercises={exercises1+exercises2+exercises3} />
+      <Content parts={course.parts}/>
+      <Total parts={course.parts} />
     </>
   )
 }
