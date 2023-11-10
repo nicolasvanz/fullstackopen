@@ -1,10 +1,25 @@
 import { useState, useEffect } from 'react'
-import axios from "axios"
+import personService from "./services/persons"
 
-const Person = ({ person }) => <p>{person.name} {person.number}</p>
+const Person = ({ person, deleteOnClick }) => {
+  return (
+    <>
+      <div>
+        <label>{person.name} {person.number}</label>
+        <button onClick={deleteOnClick}>delete</button>   
+      </div>
+    </>
+  )
+}
 
-const Persons = ({ persons }) => (
-  persons.map(person => <Person key={person.id} person={person}/>)
+const Persons = ({ persons, deleteOnClick }) => (
+  persons.map(person =>
+    <Person
+      key={person.id}
+      person={person}
+      deleteOnClick={() => deleteOnClick(person.id)}
+    />
+  )
 )
 
 const Filter = ({ filterStr, onChange }) => {
@@ -44,10 +59,9 @@ const App = () => {
   const [filterStr, setFilterStr] = useState("")
 
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:3001/persons")
-      .then(response => {
-        const persons = response.data
+    personService
+      .getAll()
+      .then(persons => {
         setPersons(persons)
       })  
   }, [])
@@ -61,11 +75,21 @@ const App = () => {
     if (persons.map(person => person.name).includes(newPerson.name))
       alert(`${newName} is already added to the phonebook`)
     else
-      axios
-        .post(`http://127.0.0.1:3001/persons`, newPerson)
-        .then(response => {
-          setPersons(persons.concat(response.data))
+      personService
+        .create(newPerson)
+        .then(createdPerson => {
+          setPersons(persons.concat(createdPerson))
         })
+  }
+
+  const removePerson = (id) => {
+    if (window.confirm(
+      `Delete ${persons.find(person => person.id === id).name}?`
+    )) {
+      personService
+        .remove(id)
+      setPersons(persons.filter(person => person.id !== id))
+    }
   }
 
   const handleChangeFilter = (event) => {
@@ -89,7 +113,7 @@ const App = () => {
         handleChangeNumber={(event) => setNewNumber(event.target.value)}
       />
       <h3>Numbers</h3>
-      <Persons persons={shownPersons} />
+      <Persons persons={shownPersons} deleteOnClick={removePerson}/>
     </div>
   )
 }
