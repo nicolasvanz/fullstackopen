@@ -57,12 +57,15 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
     }
     if (persons.map(person => person.name).includes(newPerson.name))
       alert(`${newName} is already added to the phonebook`)
     else
-      setPersons(persons.concat(newPerson))
+      axios
+        .post(`http://127.0.0.1:3001/persons`, newPerson)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+        })
   }
 
   const handleChangeFilter = (event) => {
