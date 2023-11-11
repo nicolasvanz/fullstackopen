@@ -1,5 +1,26 @@
 import { useState, useEffect } from 'react'
+
 import personService from "./services/persons"
+
+const Notification = ({ message, success }) => {
+  if (message === null) {
+    return null
+  }
+  const style = {
+    color: "green",
+    background: "lightgrey",
+    fontSize: 20,
+    borderStyle: "solid",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  return(
+    <div style={style}>
+      {message}
+    </div>
+  )
+}
 
 const Person = ({ person, deleteOnClick }) => {
   return (
@@ -57,6 +78,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState("")
   const [filterStr, setFilterStr] = useState("")
+  const [NotificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -66,38 +88,51 @@ const App = () => {
       })  
   }, [])
 
+  const notify = (message) => {
+    setNotificationMessage(message)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 3000)
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = {
       name: newName,
       number: newNumber,
     }
-    if (persons.map(person => person.name).includes(newPerson.name)) {
-      if (window.confirm(
-        `${newPerson.name} is already added to the phonebook, replace the old \
-number with a new one?`
-      )) {
-        const replacedPersonId = persons.find(
-          person => person.name === newPerson.name
-        ).id
-        personService
-          .update(
-            replacedPersonId,
-            newPerson
-          )
-          .then(updatedPerson => {
-            setPersons(persons.map(
-              person => person.id === replacedPersonId ? updatedPerson : person
-            ))
-          })
-      }
+    const windowMessage = `${newPerson.name} is already added to the phonebook\
+, replace the old number with a new one?`
+    const perssonAlreadyAdded = persons.map(person => person.name).includes(
+      newPerson.name
+    )
+    if (perssonAlreadyAdded) {
+      if (!window.confirm(windowMessage))
+        return
+
+      const replacedPersonId = persons.find(
+        person => person.name === newPerson.name
+      ).id
+      personService
+        .update(
+          replacedPersonId,
+          newPerson
+        )
+        .then(updatedPerson => {
+          setPersons(persons.map(
+            person => person.id === replacedPersonId ? updatedPerson : person
+          ))
+        })
+        notify(`Updated ${newPerson.name}'s number`)
     }
-    else
+    else {
       personService
         .create(newPerson)
         .then(createdPerson => {
           setPersons(persons.concat(createdPerson))
         })
+      notify(`Added ${newPerson.name}`)
+    }
   }
 
   const removePerson = (id) => {
@@ -121,6 +156,7 @@ number with a new one?`
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={NotificationMessage}/>
       <Filter filterStr={filterStr} onChange={handleChangeFilter}/>
       <h3>add a new</h3>
       <PersonForm
