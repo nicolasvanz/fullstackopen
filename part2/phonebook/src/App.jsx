@@ -7,7 +7,7 @@ const Notification = ({ message, success }) => {
     return null
   }
   const style = {
-    color: "green",
+    color: success ? "green" : "red",
     background: "lightgrey",
     fontSize: 20,
     borderStyle: "solid",
@@ -79,6 +79,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("")
   const [filterStr, setFilterStr] = useState("")
   const [NotificationMessage, setNotificationMessage] = useState(null)
+  const [notificationSuccess, setNotificationSuccess] = useState(true)
 
   useEffect(() => {
     personService
@@ -88,7 +89,8 @@ const App = () => {
       })  
   }, [])
 
-  const notify = (message) => {
+  const notify = (message, success=true) => {
+    setNotificationSuccess(success)
     setNotificationMessage(message)
     setTimeout(() => {
       setNotificationMessage(null)
@@ -103,6 +105,11 @@ const App = () => {
     }
     const windowMessage = `${newPerson.name} is already added to the phonebook\
 , replace the old number with a new one?`
+    const messageFailOnUpdate = `Information of ${newPerson.name} has already been \
+removed from server`
+    const messageSuccessOnUpdate = `Updated ${newPerson.name}'s number`
+    const messageSuccessOnCreate = `Added ${newPerson.name}`
+
     const perssonAlreadyAdded = persons.map(person => person.name).includes(
       newPerson.name
     )
@@ -122,26 +129,39 @@ const App = () => {
           setPersons(persons.map(
             person => person.id === replacedPersonId ? updatedPerson : person
           ))
+          notify(messageSuccessOnUpdate)
         })
-        notify(`Updated ${newPerson.name}'s number`)
+        .catch(error => {
+          notify(messageFailOnUpdate, false)
+          setPersons(persons.filter(person => person.id !== replacedPersonId))
+        })
     }
     else {
       personService
         .create(newPerson)
         .then(createdPerson => {
           setPersons(persons.concat(createdPerson))
+          notify(messageSuccessOnCreate)
         })
-      notify(`Added ${newPerson.name}`)
+        .catch(error => {
+          notify(`couldn't add ${newPerson.name}`)
+        })
     }
   }
 
   const removePerson = (id) => {
+    const person = persons.find(person => person.id === id)
     if (window.confirm(
-      `Delete ${persons.find(person => person.id === id).name}?`
+      `Delete ${person.name}?`
     )) {
       personService
         .remove(id)
-      setPersons(persons.filter(person => person.id !== id))
+        .then(response => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          notify(`Couldn't remove ${person.name}`)
+        })
     }
   }
 
@@ -156,7 +176,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={NotificationMessage}/>
+      <Notification message={NotificationMessage} success={notificationSuccess}/>
       <Filter filterStr={filterStr} onChange={handleChangeFilter}/>
       <h3>add a new</h3>
       <PersonForm
