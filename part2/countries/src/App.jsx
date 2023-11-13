@@ -18,10 +18,12 @@ function App() {
   }
 
   useEffect(() => {
+    notify("get data from server: pending")
     countriesService
       .getAll()
       .then(allCountries => {
         setCountries(allCountries)
+        notify("get data from server: OK")
       })
       .catch(error => notify("could not get data from server"))
   }, [])
@@ -41,6 +43,7 @@ function App() {
           value={searchCountry}
           onChange={(event) => setSearchCountry(event.target.value)}
         />
+        <br />
         {
           searchCountry === ""
           ? <p>Type to filter the countries</p>

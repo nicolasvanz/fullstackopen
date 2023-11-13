@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react"
+
 const Country = ({ name }) => {
-    return <p>{name}</p>
+    return <label>{name}</label>
 }
 
 const DetailedCountry = ({ country }) => {
@@ -20,6 +22,8 @@ const DetailedCountry = ({ country }) => {
 }
 
 const Countries = ({ countries }) => {
+    const [showDetails, setShowDetails] = useState(null)
+
     if (countries.length === 0) {
         return <p>No countries found</p>
     } else if (countries.length === 1) {
@@ -28,8 +32,22 @@ const Countries = ({ countries }) => {
         return (
             <>
                 {countries.map(country => 
-                    <Country name={country.name.common} key={country.name.official} />
+                    <>
+                        <Country
+                            name={country.name.common}
+                            key={country.name.official}
+                        />
+                        <button
+                            key={`${country.name.official}bt`}
+                            onClick={() => setShowDetails(country)}
+                        >show</button>
+                        <br key={`${country.name.official}br`}/>
+                    </>
                 )}
+                {showDetails !== null
+                    ? <DetailedCountry country={showDetails}/>
+                    : null
+                }
             </>
         )
     } else {
