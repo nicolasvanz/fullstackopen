@@ -1,10 +1,28 @@
 import { useState, useEffect } from "react"
 
+import weatherService from "~/services/weather"
+
 const Country = ({ name }) => {
     return <label>{name}</label>
 }
 
 const DetailedCountry = ({ country }) => {
+    const [weather, setWeather] = useState({})
+    const [weatherIcon, setWeatherIcon] = useState(null)
+
+    useEffect(() => {
+        weatherService
+            .getWeather(country.capital)
+            .then(weather => {
+                setWeather(weather)
+                weatherService
+                    .getIcon(weather.weather[0]["icon"])
+                    .then(icon => {
+                        setWeatherIcon(icon)
+                    })
+            })
+    }, [])
+
     return (
         <>
             <h1>{country.name.common}</h1>
@@ -17,6 +35,25 @@ const DetailedCountry = ({ country }) => {
                 )}
             </ul>
             <img src={country.flags["png"]} alt="" />
+            <h2>Weather in {country.capital}</h2>
+            {
+                Object.keys(weather).length === 0
+                ? <p>loading weather</p>
+                :
+                    <> 
+                        <p>temperature {`
+                            ${Intl.NumberFormat(
+                                "pt-BR",{maximumFractionDigits:2}
+                            ).format(weather.main.temp)} Celsius
+                        `}</p>
+                        <img src={weatherIcon}/>
+                        <p>wind {
+                            Intl.NumberFormat("pt-BR", {
+                                style:"unit", unit:"meter-per-second"
+                            }).format(weather.wind["speed"])
+                        }</p>
+                    </>
+            }
         </>
     )
 }
