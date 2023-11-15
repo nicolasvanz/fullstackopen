@@ -28,6 +28,8 @@ let persons = [
     }
 ]
 
+const generateNewRandomId = () => Math.floor(Math.random() * 10000)
+
 app.get("/api/persons", (request, response) => {
   response.json(persons)
 })
@@ -49,6 +51,31 @@ app.get("/info", (request, response) => {
       <p>${new Date()}</p>
     `  
   )
+})
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body
+
+  if (!body.name) {
+    return response.status(400).json({
+      error: "'name' missing"
+    })
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: "'number' missing"
+    })
+  }
+
+  const newPerson = {
+    id: generateNewRandomId(),
+    name: body.name,
+    number: body.number
+  }
+
+  persons = persons.concat(newPerson)
+  response.json(newPerson)
 })
 
 app.delete("/api/persons/:id", (request, response) => {
