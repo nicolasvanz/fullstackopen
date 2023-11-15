@@ -1,0 +1,5 @@
+DELETE http://127.0.0.1:3001/api/persons/2
+###
+DELETE http://127.0.0.1:3001/api/persons/4000
+###
+GET http://127.0.0.1:3001/api/persons
