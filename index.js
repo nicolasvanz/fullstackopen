@@ -68,6 +68,16 @@ app.post("/api/persons", (request, response) => {
     })
   }
 
+  const nameIsUnique = persons.find(
+    person => person.name === body.name
+  ) === undefined
+  
+  if (!nameIsUnique) {
+    return response.status(400).json({
+      error: "name must be unique"
+    })
+  }
+
   const newPerson = {
     id: generateNewRandomId(),
     name: body.name,
