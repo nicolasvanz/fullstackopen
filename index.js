@@ -24,20 +24,24 @@ app.get("/api/persons", (request, response, next) => {
 })
 
 app.get("/api/persons/:id", (request, response, next) => {
-  Person.find(request.params.id)
+  Person.findById(request.params.id)
     .then(person =>
       response.json(person)
     )
     .catch(error => next(error))
 })
 
-app.get("/info", (request, response) => {
-  response.send(
-    `
-      <p>Phonebook has info for ${persons.length} people</p>
-      <p>${new Date()}</p>
-    `  
-  )
+app.get("/info", (request, response, next) => {
+  Person.find({})
+    .then(persons => {
+      response.send(
+        `
+          <p>Phonebook has info for ${persons.length} people</p>
+          <p>${new Date()}</p>
+        `
+      )
+    })
+    .catch(error => next(error))
 })
 
 app.post("/api/persons", (request, response) => {
