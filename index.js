@@ -15,18 +15,20 @@ app.use(express.json())
 app.use(cors())
 app.use(express.static("dist"))
 
-const generateNewRandomId = () => Math.floor(Math.random() * 10000)
-
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons)
-  })
+app.get("/api/persons", (request, response, next) => {
+  Person.find({})
+    .then(persons => {
+      response.json(persons)
+    })
+    .catch(error => next(error))
 })
 
-app.get("/api/persons/:id", (request, response) => {
-  Person.find(request.params.id).then(person =>
-    response.json(person)
-  )
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.find(request.params.id)
+    .then(person =>
+      response.json(person)
+    )
+    .catch(error => next(error))
 })
 
 app.get("/info", (request, response) => {
@@ -63,11 +65,30 @@ app.post("/api/persons", (request, response) => {
   })
 })
 
-app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-  response.status(204).end()
+app.delete("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({error: "unknown endpoint"})
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === "CastError") {
+      return response.status(400).send({error: "malformatted id"})
+  }
+  next(error)
+}
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
