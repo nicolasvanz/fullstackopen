@@ -53,24 +53,14 @@ app.post("/api/persons", (request, response) => {
     })
   }
 
-  const nameIsUnique = persons.find(
-    person => person.name === body.name
-  ) === undefined
-  
-  if (!nameIsUnique) {
-    return response.status(400).json({
-      error: "name must be unique"
-    })
-  }
-
-  const newPerson = {
-    id: generateNewRandomId(),
+  const newPerson = new Person({
     name: body.name,
     number: body.number
-  }
+  })
 
-  persons = persons.concat(newPerson)
-  response.json(newPerson)
+  newPerson.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 app.delete("/api/persons/:id", (request, response) => {
