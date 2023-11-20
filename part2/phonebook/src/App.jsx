@@ -144,7 +144,10 @@ removed from server`
           notify(messageSuccessOnCreate)
         })
         .catch(error => {
-          notify(`couldn't add ${newPerson.name}`)
+          notify(
+            `couldn't add ${newPerson.name}: ${error.response.data.error}`,
+            false
+          )
         })
     }
   }
