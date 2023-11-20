@@ -105,8 +105,7 @@ const App = () => {
     }
     const windowMessage = `${newPerson.name} is already added to the phonebook\
 , replace the old number with a new one?`
-    const messageFailOnUpdate = `Information of ${newPerson.name} has already been \
-removed from server`
+    const messageFailOnUpdate = `Couldn't update ${newPerson.name}`
     const messageSuccessOnUpdate = `Updated ${newPerson.name}'s number`
     const messageSuccessOnCreate = `Added ${newPerson.name}`
 
@@ -132,8 +131,7 @@ removed from server`
           notify(messageSuccessOnUpdate)
         })
         .catch(error => {
-          notify(messageFailOnUpdate, false)
-          setPersons(persons.filter(person => person.id !== replacedPersonId))
+          notify(`${messageFailOnUpdate}: ${error.response.data.error}`, false)
         })
     }
     else {
