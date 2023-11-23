@@ -51,7 +51,6 @@ const blogs = [
 
 const blogsInDb = async () => {
   const blogs = await Blog.find({})
-  console.log(blogs)
   return blogs.map(blog => blog.toJSON())
 }
 
@@ -112,5 +111,5 @@ module.exports = {
   listWithOneBlog,
   blogs,
   blogsInDb,
-  blogWasCreatedSuccessfully
+  blogWasCreatedSuccessfully,
 }
