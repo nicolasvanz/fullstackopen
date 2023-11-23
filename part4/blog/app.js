@@ -1,6 +1,7 @@
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
+require("express-async-errors")
 
 const blogRouter = require("./controllers/blogs")
 const config = require("./utils/config")
@@ -9,6 +10,7 @@ const middleware = require("./utils/middleware")
 
 const app = express()
 
+mongoose.set("strictQuery", false)
 
 console.info(`Connecting to ${config.MONGODB_URI}`)
 mongoose.connect(config.MONGODB_URI)
