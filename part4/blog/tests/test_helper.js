@@ -50,8 +50,9 @@ const blogs = [
 ]
 
 const blogsInDb = async () => {
-  const notes = await Blog.find({})
-  return notes.map(blog => blog.toJSON())
+  const blogs = await Blog.find({})
+  console.log(blogs)
+  return blogs.map(blog => blog.toJSON())
 }
 
 const blogWasCreatedSuccessfully = async (blogsAtBegin, response) => {

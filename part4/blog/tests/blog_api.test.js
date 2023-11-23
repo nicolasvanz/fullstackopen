@@ -58,3 +58,27 @@ test("POST: if 'likes' property is missing, it will default to zero",
     expect(response.body.likes).toBe(0)
   }
 )
+
+test("POST: blog with missing 'title' or 'url' is NOT created", async () => {
+  let newBlog = helper.listWithOneBlog[0]
+  delete newBlog.title
+
+  const blogsAtBegin = await helper.blogsInDb()
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(400)
+
+  expect(await helper.blogsInDb()).toHaveLength(blogsAtBegin.length)
+
+  newBlog = helper.listWithOneBlog[0]
+  delete newBlog.url
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(400)
+
+  expect(await helper.blogsInDb()).toHaveLength(blogsAtBegin.length)
+})

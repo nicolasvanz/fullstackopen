@@ -7,12 +7,9 @@ blogRouter.get("/", async (request, response) => {
 })
 
 blogRouter.post("/", async (request, response) => {
-  const blog = new Blog({
-    ...request.body,
-    likes: request.body.likes || 0
-  })
+  const blog = new Blog(request.body)
 
-  const savedBlog = await blog.save()
+  const savedBlog = await blog.save({ runValidators: true })
 
   response.status(201).json(savedBlog)
 })
