@@ -54,6 +54,16 @@ const blogsInDb = async () => {
   return notes.map(blog => blog.toJSON())
 }
 
+const blogWasCreatedSuccessfully = async (blogsAtBegin, response) => {
+  const blogsAtEnd = await blogsInDb()
+  expect(blogsAtEnd).toHaveLength(blogsAtBegin.length + 1)
+
+  const urls = blogsAtEnd.map(blog => blog.url)
+  expect(urls).toContain(response.body.url)
+
+  expect(response.body.id).toBeDefined()
+}
+
 const totalLikes = (blogs) => {
   const likes = blogs.reduce((acc, curr) => curr.likes + acc, 0)
   return likes
@@ -100,5 +110,6 @@ module.exports = {
   mostLikes,
   listWithOneBlog,
   blogs,
-  blogsInDb
+  blogsInDb,
+  blogWasCreatedSuccessfully
 }

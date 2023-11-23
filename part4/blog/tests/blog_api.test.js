@@ -39,11 +39,22 @@ test("POST: a blog can be created", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/)
 
-  const blogsAtEnd = await helper.blogsInDb()
-  expect(blogsAtEnd).toHaveLength(blogsAtBegin.length + 1)
-
-  const urls = blogsAtEnd.map(blog => blog.url)
-  expect(urls).toContainEqual(newBlog.url)
-
-  expect(response.body.id).toBeDefined()
+  helper.blogWasCreatedSuccessfully(blogsAtBegin, response)
 })
+
+test("POST: if 'likes' property is missing, it will default to zero",
+  async () => {
+    const newBlog = helper.listWithOneBlog[0]
+    delete newBlog.likes
+    const blogsAtBegin = await helper.blogsInDb()
+
+    const response = await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/)
+
+    await helper.blogWasCreatedSuccessfully(blogsAtBegin, response)
+    expect(response.body.likes).toBe(0)
+  }
+)
