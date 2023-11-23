@@ -33,7 +33,7 @@ test("POST: a blog can be created", async () => {
   const newBlog = helper.listWithOneBlog[0]
   const blogsAtBegin = await helper.blogsInDb()
 
-  await api
+  const response = await api
     .post("/api/blogs")
     .send(newBlog)
     .expect(201)
@@ -44,4 +44,6 @@ test("POST: a blog can be created", async () => {
 
   const urls = blogsAtEnd.map(blog => blog.url)
   expect(urls).toContainEqual(newBlog.url)
+
+  expect(response.body.id).toBeDefined()
 })
