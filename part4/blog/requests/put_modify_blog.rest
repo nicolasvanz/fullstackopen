@@ -1,0 +1,9 @@
+PUT http://127.0.0.1:3001/api/blogs/655f7f3dafe798ee9ba1e35e
+Content-Type: application/json
+
+{
+  "title": "React patterns",
+  "author": "Michael Chan",
+  "url": "https://reactpatterns.com/",
+  "likes": 7
+}

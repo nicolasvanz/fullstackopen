@@ -32,8 +32,8 @@ describe("GET", () => {
 })
 
 describe("POST", () => {
-  test("a blog can be created", async () => {
-    const newBlog = helper.listWithOneBlog[0]
+  test("a valid blog can be created", async () => {
+    const newBlog = { ...helper.listWithOneBlog[0] }
     const blogsAtBegin = await helper.blogsInDb()
 
     const response = await api
@@ -63,7 +63,7 @@ describe("POST", () => {
   )
 
   test("blog with missing 'title' or 'url' is NOT created", async () => {
-    let newBlog = helper.listWithOneBlog[0]
+    let newBlog = { ...helper.listWithOneBlog[0] }
     delete newBlog.title
 
     const blogsAtBegin = await helper.blogsInDb()
@@ -75,7 +75,7 @@ describe("POST", () => {
 
     expect(await helper.blogsInDb()).toHaveLength(blogsAtBegin.length)
 
-    newBlog = helper.listWithOneBlog[0]
+    newBlog = { ...helper.listWithOneBlog[0] }
     delete newBlog.url
 
     await api
@@ -88,9 +88,9 @@ describe("POST", () => {
 })
 
 describe("DELETE", () => {
-  test("a blog whose id is valid can be deleted", async () => {
+  test("of a blog whose id is valid returns 204", async () => {
     const blogsAtBegin = await helper.blogsInDb()
-    const blogToDelete = blogsAtBegin[0]
+    const blogToDelete = { ...blogsAtBegin[0] }
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
@@ -102,23 +102,53 @@ describe("DELETE", () => {
     const urls = blogsAtEnd.map(blog => blog.url)
     expect(urls).not.toContain(blogToDelete.url)
   })
+})
 
-  test("a blog whose id is invalid returns 400 on deletion", async () => {
+describe("PUT", () => {
+  test("a blog whose id and data is valid can be updated", async () => {
     const blogsAtBegin = await helper.blogsInDb()
-    const randomInvalidId = Math.random*1000
 
-    await api
-      .delete(`/api/blogs/${randomInvalidId}`)
-      .expect(400)
+    const newBlogTitle = `this titled was modified ${helper.randomNumber()}`
+    const blogToUpdate = { ...blogsAtBegin[0] }
+    const editedBlog = { ...helper.listWithOneBlog[0], title: newBlogTitle }
+
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(editedBlog)
+      .expect(200)
+      .expect("Content-Type", /application\/json/)
+
+    expect(response.body.id).toEqual(blogToUpdate.id)
+    expect(response.body.title).toEqual(editedBlog.title)
 
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(blogsAtBegin.length)
 
-    const idsAtBegin = blogsAtBegin.map(blog => blog.id)
-    const idsAtEnd = blogsAtBegin.map(blog => blog.id)
+    const updatedBlog = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+    expect(updatedBlog).toBeDefined()
+    expect(updatedBlog.title).toBe(newBlogTitle)
+  })
 
-    idsAtBegin.forEach(id => {
-      expect(idsAtEnd).toContain(id)
+  test("of a blog whose id is NOT valid returns 200 with null content, \
+not modifing the DB state", async () => {
+    const blogsAtBegin = await helper.blogsInDb()
+
+    const newBlogTitle = `this title was modified ${helper.randomNumber()}`
+    const editedBlog = { ...helper.listWithOneBlog[0], title: newBlogTitle }
+
+    const response = await api
+      .put(`/api/blogs/${await helper.invalidId()}`)
+      .send(editedBlog)
+      .expect(200)
+
+    expect(response.body).toBe(null)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(blogsAtBegin.length)
+
+    blogsAtEnd.forEach(blog => {
+      expect(blog.title).not.toBe(newBlogTitle)
     })
   })
 })

@@ -64,6 +64,20 @@ const blogWasCreatedSuccessfully = async (blogsAtBegin, response) => {
   expect(response.body.id).toBeDefined()
 }
 
+const randomNumber = () => Math.random() * 1000
+
+const invalidId = async () => {
+  const blog = new Blog({
+    ...listWithOneBlog[0],
+    title: `random title ${randomNumber}`
+  })
+  const savedBlog = await blog.save()
+  const id = savedBlog.id
+  await Blog.findByIdAndDelete(id)
+
+  return id
+}
+
 const totalLikes = (blogs) => {
   const likes = blogs.reduce((acc, curr) => curr.likes + acc, 0)
   return likes
@@ -112,4 +126,6 @@ module.exports = {
   blogs,
   blogsInDb,
   blogWasCreatedSuccessfully,
+  randomNumber,
+  invalidId
 }
