@@ -1,5 +1,6 @@
 POST http://127.0.0.1:3001/api/notes
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY1NjBlODk1NmRjYzgzODA4N2M0ODBlMiIsImlhdCI6MTcwMDkzNzc2NH0.0S8evzIB4Ef4AwVk0FS3uXVlBxBsvccyAcrgHaWhLd0
 
 {
     "content": "User id of the note creator is at the start sent along the request",
