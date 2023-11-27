@@ -80,4 +80,49 @@ describe("users: POST", () => {
 
     expect(await helper.usersInDb()).toEqual(usersAtBegin)
   })
+
+  test("of a user whose password is not long enough returns 400", async () => {
+    const usersAtBegin = await helper.usersInDb()
+    const invalidUser = {
+      ...helper.user,
+      password: "ab"
+    }
+
+    await api
+      .post("/api/users")
+      .send(invalidUser)
+      .expect(400)
+
+    expect(await helper.usersInDb()).toEqual(usersAtBegin)
+  })
+
+  test("of a user whose username is not long enough returns 400", async () => {
+    const usersAtBegin = await helper.usersInDb()
+    const invalidUser = {
+      ...helper.user,
+      username: "ab"
+    }
+
+    await api
+      .post("/api/users")
+      .send(invalidUser)
+      .expect(400)
+
+    expect(await helper.usersInDb()).toEqual(usersAtBegin)
+  })
+
+  test("of a user whose username is not unique returns 400", async () => {
+    const usersAtBegin = await helper.usersInDb()
+    const invalidUser = {
+      ...helper.user,
+      username: helper.users[0].username
+    }
+
+    await api
+      .post("/api/users")
+      .send(invalidUser)
+      .expect(400)
+
+    expect(await helper.usersInDb()).toEqual(usersAtBegin)
+  })
 })
