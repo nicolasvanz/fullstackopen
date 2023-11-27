@@ -1,5 +1,6 @@
 const _ = require("lodash")
 const Blog = require("../models/blog")
+const User = require("../models/user")
 
 const listWithOneBlog = [
   {
@@ -49,9 +50,33 @@ const blogs = [
   }
 ]
 
+const users = [
+  {
+    name: "rootname",
+    username: "root",
+    password: "root123"
+  },
+  {
+    name: "dummy",
+    username: "dummyname",
+    password: "123dummy123"
+  }
+]
+
+const user = {
+  name: "tempUserName",
+  username: "tempUser",
+  password: "temp123temp"
+}
+
 const blogsInDb = async () => {
   const blogs = await Blog.find({})
   return blogs.map(blog => blog.toJSON())
+}
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
 }
 
 const blogWasCreatedSuccessfully = async (blogsAtBegin, response) => {
@@ -124,7 +149,10 @@ module.exports = {
   mostLikes,
   listWithOneBlog,
   blogs,
+  user,
+  users,
   blogsInDb,
+  usersInDb,
   blogWasCreatedSuccessfully,
   randomNumber,
   invalidId
