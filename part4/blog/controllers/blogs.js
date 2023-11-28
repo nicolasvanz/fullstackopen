@@ -4,15 +4,10 @@ const jwt = require("jsonwebtoken")
 const Blog = require("../models/blog")
 const User = require("../models/user")
 
-const getLoggedInUserId = request => {
-  const authorization = request.get("authorization")
-  if (!(authorization && authorization.startsWith("Bearer "))) {
-    return null
-  }
-  const encodedToken = authorization.replace("Bearer ", "")
-  const decodedToken = jwt.verify(encodedToken, process.env.SECRET)
-
-  return decodedToken.id
+const getLoggedInUserId = encodedToken => {
+  return encodedToken === null
+    ? null
+    : jwt.verify(encodedToken, process.env.SECRET).id
 }
 
 blogRouter.get("/", async (request, response) => {
@@ -21,7 +16,7 @@ blogRouter.get("/", async (request, response) => {
 })
 
 blogRouter.post("/", async (request, response) => {
-  const loggedInUserId = getLoggedInUserId(request)
+  const loggedInUserId = getLoggedInUserId(request.token)
 
   if (!loggedInUserId) {
     return response.status(401).send({ error: "not authorized" })
