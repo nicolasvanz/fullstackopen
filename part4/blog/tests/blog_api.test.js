@@ -1,15 +1,28 @@
 const mongoose = require("mongoose")
 const supertest = require("supertest")
+const bcrypt = require("bcrypt")
 
 const app = require("../app")
 const Blog = require("../models/blog")
+const User = require("../models/user")
 const helper = require("./test_helper")
 
 const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  const blogObjects = helper.blogs.map(blog => new Blog(blog))
+  await User.deleteMany({})
+  const saltRounds = 10
+  const passwordHashedUser = {
+    ...helper.user,
+    passwordHash: await bcrypt.hash(helper.user.password, saltRounds)
+  }
+  delete passwordHashedUser.password
+  const savedUser = await (new User(passwordHashedUser).save())
+  const blogObjects = helper.blogs.map(blog => new Blog({
+    ...blog,
+    user: savedUser.id
+  }))
   await Promise.all(blogObjects.map(blog => blog.save()))
 })
 
@@ -17,7 +30,7 @@ afterAll(async () => {
   await mongoose.connection.close()
 })
 
-describe("GET", () => {
+describe("blogs: GET", () => {
   test("blogs are returned as json", async () => {
     await api
       .get("/api/blogs")
@@ -31,7 +44,7 @@ describe("GET", () => {
   })
 })
 
-describe("POST", () => {
+describe("blogs: POST", () => {
   test("a valid blog can be created", async () => {
     const newBlog = { ...helper.listWithOneBlog[0] }
     const blogsAtBegin = await helper.blogsInDb()
@@ -87,7 +100,7 @@ describe("POST", () => {
   })
 })
 
-describe("DELETE", () => {
+describe("blogs: DELETE", () => {
   test("of a blog whose id is valid returns 204", async () => {
     const blogsAtBegin = await helper.blogsInDb()
     const blogToDelete = { ...blogsAtBegin[0] }
@@ -104,7 +117,7 @@ describe("DELETE", () => {
   })
 })
 
-describe("PUT", () => {
+describe("blogs: PUT", () => {
   test("a blog whose id and data is valid can be updated", async () => {
     const blogsAtBegin = await helper.blogsInDb()
 
@@ -138,7 +151,7 @@ not modifing the DB state", async () => {
     const editedBlog = { ...helper.listWithOneBlog[0], title: newBlogTitle }
 
     const response = await api
-      .put(`/api/blogs/${await helper.invalidId()}`)
+      .put(`/api/blogs/${await helper.invalidBlogId()}`)
       .send(editedBlog)
       .expect(200)
 

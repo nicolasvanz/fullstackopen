@@ -91,10 +91,13 @@ const blogWasCreatedSuccessfully = async (blogsAtBegin, response) => {
 
 const randomNumber = () => Math.random() * 1000
 
-const invalidId = async () => {
+const invalidBlogId = async () => {
+  const user = await User.findOne()
+
   const blog = new Blog({
     ...listWithOneBlog[0],
-    title: `random title ${randomNumber}`
+    title: `random title ${randomNumber}`,
+    user: user.id
   })
   const savedBlog = await blog.save()
   const id = savedBlog.id
@@ -155,5 +158,5 @@ module.exports = {
   usersInDb,
   blogWasCreatedSuccessfully,
   randomNumber,
-  invalidId
+  invalidBlogId
 }
