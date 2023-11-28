@@ -9,6 +9,17 @@ const helper = require("./test_helper")
 
 const api = supertest(app)
 
+const login = async () => {
+  const { username, password } = helper.user
+  const response = await api
+    .post("/api/login")
+    .send({ username, password })
+    .expect(200)
+  const token = response.body.token
+  expect(token).toBeDefined()
+  return `Bearer ${token}`
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   await User.deleteMany({})
@@ -51,6 +62,7 @@ describe("blogs: POST", () => {
 
     const response = await api
       .post("/api/blogs")
+      .set("authorization", await login())
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/)
@@ -66,6 +78,7 @@ describe("blogs: POST", () => {
 
       const response = await api
         .post("/api/blogs")
+        .set("authorization", await login())
         .send(newBlog)
         .expect(201)
         .expect("Content-Type", /application\/json/)
@@ -80,10 +93,12 @@ describe("blogs: POST", () => {
     delete newBlog.title
 
     const blogsAtBegin = await helper.blogsInDb()
+    const token = await login()
 
     await api
       .post("/api/blogs")
       .send(newBlog)
+      .set("authorization", token)
       .expect(400)
 
     expect(await helper.blogsInDb()).toHaveLength(blogsAtBegin.length)
@@ -93,10 +108,24 @@ describe("blogs: POST", () => {
 
     await api
       .post("/api/blogs")
+      .set("authorization", token)
       .send(newBlog)
       .expect(400)
 
     expect(await helper.blogsInDb()).toHaveLength(blogsAtBegin.length)
+  })
+
+  test("a valid blog cannot be created with no logged in user", async () => {
+    const newBlog = { ...helper.listWithOneBlog[0] }
+    const blogsAtBegin = await helper.blogsInDb()
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(401)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtBegin).toEqual(blogsAtEnd)
   })
 })
 
