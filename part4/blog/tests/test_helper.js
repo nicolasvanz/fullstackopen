@@ -158,5 +158,5 @@ module.exports = {
   usersInDb,
   blogWasCreatedSuccessfully,
   randomNumber,
-  invalidBlogId
+  invalidBlogId,
 }
