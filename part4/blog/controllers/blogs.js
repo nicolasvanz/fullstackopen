@@ -1,28 +1,20 @@
 const blogRouter = require("express").Router()
-const jwt = require("jsonwebtoken")
 
 const Blog = require("../models/blog")
 const User = require("../models/user")
-
-const getLoggedInUserId = encodedToken => {
-  return encodedToken === null
-    ? null
-    : jwt.verify(encodedToken, process.env.SECRET).id
-}
+const middleware = require("../utils/middleware")
 
 blogRouter.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 })
   response.json(blogs)
 })
 
-blogRouter.post("/", async (request, response) => {
-  const loggedInUserId = getLoggedInUserId(request.token)
-
-  if (!loggedInUserId) {
+blogRouter.post("/", middleware.userExtractor, async (request, response) => {
+  if (!request.user) {
     return response.status(401).send({ error: "not authorized" })
   }
 
-  const user = await User.findById(loggedInUserId)
+  const user = await User.findById(request.user)
   const blog = new Blog({
     ...request.body,
     user: user.id
@@ -35,15 +27,13 @@ blogRouter.post("/", async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
-blogRouter.delete("/:id", async (request, response) => {
-  const loggedInUserId = getLoggedInUserId(request.token)
-
-  if (!loggedInUserId) {
+blogRouter.delete("/:id", middleware.userExtractor, async (request, response) => {
+  if (!request.user) {
     return response.status(401).send({ error: "not authorized" })
   }
 
   const blog = await Blog.findById(request.params.id)
-  const userIsTheBlogCreator = blog.user.toString() === loggedInUserId
+  const userIsTheBlogCreator = blog.user.toString() === request.user
 
   if (!userIsTheBlogCreator) {
     return response.status(401).send({ error: "not authorized" })
