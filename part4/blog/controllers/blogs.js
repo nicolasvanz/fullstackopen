@@ -36,6 +36,19 @@ blogRouter.post("/", async (request, response) => {
 })
 
 blogRouter.delete("/:id", async (request, response) => {
+  const loggedInUserId = getLoggedInUserId(request.token)
+
+  if (!loggedInUserId) {
+    return response.status(401).send({ error: "not authorized" })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+  const userIsTheBlogCreator = blog.user.toString() === loggedInUserId
+
+  if (!userIsTheBlogCreator) {
+    return response.status(401).send({ error: "not authorized" })
+  }
+
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
 })

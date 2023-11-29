@@ -9,8 +9,10 @@ const helper = require("./test_helper")
 
 const api = supertest(app)
 
-const login = async () => {
-  const { username, password } = helper.user
+let creatorUserCredentials = null
+
+const login = async (user = helper.user) => {
+  const { username, password } = user
   const response = await api
     .post("/api/login")
     .send({ username, password })
@@ -24,17 +26,33 @@ beforeEach(async () => {
   await Blog.deleteMany({})
   await User.deleteMany({})
   const saltRounds = 10
-  const passwordHashedUser = {
-    ...helper.user,
-    passwordHash: await bcrypt.hash(helper.user.password, saltRounds)
-  }
-  delete passwordHashedUser.password
-  const savedUser = await (new User(passwordHashedUser).save())
+  const passordHashedUsers = await Promise.all(helper.users.concat(helper.user)
+    .map(async user => {
+      const passordHashedUser = {
+        ...user,
+        passwordHash: await bcrypt.hash(user.password, saltRounds)
+      }
+      delete passordHashedUser.password
+      return passordHashedUser
+    })
+  )
+  await Promise.all(
+    passordHashedUsers.map(async user => await new User(user).save())
+  )
+  const usersInDb = await helper.usersInDb()
+  const creatorUser = usersInDb[0]
   const blogObjects = helper.blogs.map(blog => new Blog({
     ...blog,
-    user: savedUser.id
+    user: creatorUser.id
   }))
   await Promise.all(blogObjects.map(blog => blog.save()))
+  const creatorUserLocal = helper.users.concat(helper.user).find(
+    user => user.username === creatorUser.username
+  )
+  creatorUserCredentials = {
+    username: creatorUserLocal.username,
+    password: creatorUserLocal.password
+  }
 })
 
 afterAll(async () => {
@@ -130,12 +148,13 @@ describe("blogs: POST", () => {
 })
 
 describe("blogs: DELETE", () => {
-  test("of a blog whose id is valid returns 204", async () => {
+  test("of a blog whose id is valid by the creator returns 204", async () => {
     const blogsAtBegin = await helper.blogsInDb()
     const blogToDelete = { ...blogsAtBegin[0] }
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("authorization", await login(creatorUserCredentials))
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -144,6 +163,38 @@ describe("blogs: DELETE", () => {
     const urls = blogsAtEnd.map(blog => blog.url)
     expect(urls).not.toContain(blogToDelete.url)
   })
+
+  test("of a blog whose id is valid NOT by the creator returns 401",
+    async () => {
+      const blogsAtBegin = await helper.blogsInDb()
+      const blogToDelete = { ...blogsAtBegin[0] }
+      const notCreatorUser = helper.users.concat(helper.user).find(
+        user => user.username !== creatorUserCredentials.username
+      )
+
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .set("authorization", await login(notCreatorUser))
+        .expect(401)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      expect(blogsAtEnd).toEqual(blogsAtBegin)
+    }
+  )
+
+  test("of a blog whose id is valid with no logged in user returns 401",
+    async () => {
+      const blogsAtBegin = await helper.blogsInDb()
+      const blogToDelete = { ...blogsAtBegin[0] }
+
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(401)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      expect(blogsAtEnd).toEqual(blogsAtBegin)
+    }
+  )
 })
 
 describe("blogs: PUT", () => {
