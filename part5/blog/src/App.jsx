@@ -53,7 +53,8 @@ const App = () => {
       blogService.setToken(user.token)
       window.localStorage.setItem("user", JSON.stringify(user))
     } catch (exception) {
-      notify("error logging in", false)
+      notify(`Couldn't log in: ${exception.response.status} - \
+${exception.response.data.error}`, false)
     }
   }
 
@@ -72,7 +73,7 @@ const App = () => {
     }
     try {
       const createdBlog = await blogService.create(newBlog)
-      notify("creted new blog")
+      notify(`a new blog '${createdBlog.title}' by ${createdBlog.author} added`)
       setBlogs(blogs.concat(createdBlog))
     } catch (exception) {
       notify(`couldn't create blog: ${exception.response.data.error}`, false)
