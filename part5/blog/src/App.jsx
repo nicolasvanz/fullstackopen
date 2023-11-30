@@ -51,6 +51,11 @@ const App = () => {
     }
   }
 
+  const handleLogout = () => {
+    window.localStorage.removeItem("user")
+    setUser(null)
+  }
+
   return (
     <div>
       <Notification message={notifyMessage} success={notifySuccess} />
@@ -59,6 +64,7 @@ const App = () => {
         <div>
           <h2>blogs</h2>
           <p>{user.name} logged in </p>
+          <button onClick={handleLogout}>logout</button>
           <BlogList blogs={blogs}/>
         </div>
       }
