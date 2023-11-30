@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import BlogList from './components/Blog'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
+import NewBlogForm from './components/NewBlogForm'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -14,6 +15,9 @@ const App = () => {
   const [password, setPassword] = useState("")
   const [notifyMessage, setNotifyMesssage] = useState(null)
   const [notifySuccess, setNotifySuccess] = useState(false)
+  const [newBlogTitle, setNewBlogTitle] = useState("")
+  const [newBlogAuthor, setNewBlogAuthor] = useState("")
+  const [newBlogUrl, setNewBlogUrl] = useState("")
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -26,6 +30,7 @@ const App = () => {
     if (userJSON) {
       const user = JSON.parse(userJSON)
       setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -45,6 +50,7 @@ const App = () => {
       setUser(user)
       setUsername("")
       setPassword("")
+      blogService.setToken(user.token)
       window.localStorage.setItem("user", JSON.stringify(user))
     } catch (exception) {
       notify("error logging in", false)
@@ -54,6 +60,23 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem("user")
     setUser(null)
+    blogService.setToken(null)
+  }
+
+  const createNewBlog = async (event) => {
+    event.preventDefault()
+    const newBlog = {
+      title: newBlogTitle,
+      author: newBlogAuthor,
+      url: newBlogUrl
+    }
+    try {
+      const createdBlog = await blogService.create(newBlog)
+      notify("creted new blog")
+      setBlogs(blogs.concat(createdBlog))
+    } catch (exception) {
+      notify(`couldn't create blog: ${exception.response.data.error}`, false)
+    }
   }
 
   return (
@@ -63,8 +86,19 @@ const App = () => {
         user &&
         <div>
           <h2>blogs</h2>
-          <p>{user.name} logged in </p>
-          <button onClick={handleLogout}>logout</button>
+          <div>
+            <label>{user.name} logged in </label>
+            <button onClick={handleLogout}>logout</button>
+          </div>
+          <NewBlogForm
+            title={newBlogTitle}
+            setTitle={setNewBlogTitle}
+            author={newBlogAuthor}
+            setAuthor={setNewBlogAuthor}
+            url={newBlogUrl}
+            setUrl={setNewBlogUrl}
+            onSubmit={createNewBlog}
+          />
           <BlogList blogs={blogs}/>
         </div>
       }
