@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import BlogList from './components/Blog'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import NewBlogForm from './components/NewBlogForm'
+import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -18,6 +19,7 @@ const App = () => {
   const [newBlogTitle, setNewBlogTitle] = useState("")
   const [newBlogAuthor, setNewBlogAuthor] = useState("")
   const [newBlogUrl, setNewBlogUrl] = useState("")
+  const newBlogRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -75,9 +77,26 @@ ${exception.response.data.error}`, false)
       const createdBlog = await blogService.create(newBlog)
       notify(`a new blog '${createdBlog.title}' by ${createdBlog.author} added`)
       setBlogs(blogs.concat(createdBlog))
+      newBlogRef.current.toggleVisibility()
     } catch (exception) {
       notify(`couldn't create blog: ${exception.response.data.error}`, false)
     }
+  }
+
+  const newBlogForm = () => {
+    return (
+      <Togglable buttonLabel="new note" ref={newBlogRef}>
+        <NewBlogForm
+          title={newBlogTitle}
+          setTitle={setNewBlogTitle}
+          author={newBlogAuthor}
+          setAuthor={setNewBlogAuthor}
+          url={newBlogUrl}
+          setUrl={setNewBlogUrl}
+          onSubmit={createNewBlog}
+        />
+      </Togglable>
+    )
   }
 
   return (
@@ -91,15 +110,7 @@ ${exception.response.data.error}`, false)
             <label>{user.name} logged in </label>
             <button onClick={handleLogout}>logout</button>
           </div>
-          <NewBlogForm
-            title={newBlogTitle}
-            setTitle={setNewBlogTitle}
-            author={newBlogAuthor}
-            setAuthor={setNewBlogAuthor}
-            url={newBlogUrl}
-            setUrl={setNewBlogUrl}
-            onSubmit={createNewBlog}
-          />
+          {newBlogForm()}
           <BlogList blogs={blogs}/>
         </div>
       }
