@@ -99,6 +99,15 @@ ${exception.response.data.error}`, false)
     )
   }
 
+  const addLikeToBlog = async (blog) => {
+    const likedBlog = {...blog, likes: blog.likes + 1}
+    
+    const updatedBlog = await blogService
+      .update(likedBlog)
+    
+    setBlogs(blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog))
+  }
+
   return (
     <div>
       <Notification message={notifyMessage} success={notifySuccess} />
@@ -111,7 +120,7 @@ ${exception.response.data.error}`, false)
             <button onClick={handleLogout}>logout</button>
           </div>
           {newBlogForm()}
-          <BlogList blogs={blogs}/>
+          <BlogList blogs={blogs} handleBlogLike={addLikeToBlog}/>
         </div>
       }
       {
