@@ -85,7 +85,7 @@ ${exception.response.data.error}`, false)
 
   const newBlogForm = () => {
     return (
-      <Togglable buttonLabel="new note" ref={newBlogRef}>
+      <Togglable buttonLabel="new blog" ref={newBlogRef}>
         <NewBlogForm
           title={newBlogTitle}
           setTitle={setNewBlogTitle}
