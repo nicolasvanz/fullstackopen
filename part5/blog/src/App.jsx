@@ -108,6 +108,25 @@ ${exception.response.data.error}`, false)
     setBlogs(blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog))
   }
 
+  const handleDelete = async (blogToDelete) => {
+    try {
+      if (!window.confirm(
+        `Remove blog ${blogToDelete.title} by ${blogToDelete.author}?`
+      )) {
+        return
+      }
+      await blogService
+        .remove(blogToDelete.id)
+      setBlogs(blogs.filter(blog => blog.id !== blogToDelete.id))
+      notify(`${blogToDelete.title} successfully deleted`)
+    } catch (exception) {
+      notify(
+        `Couldn't remove the blog: ${exception?.response?.data?.error}`,
+        false
+      )
+    }
+  }
+
   blogs.sort((a, b) => b.likes - a.likes)
 
   return (
@@ -122,7 +141,11 @@ ${exception.response.data.error}`, false)
             <button onClick={handleLogout}>logout</button>
           </div>
           {newBlogForm()}
-          <BlogList blogs={blogs} handleBlogLike={addLikeToBlog}/>
+          <BlogList
+            blogs={blogs}
+            handleBlogLike={addLikeToBlog}
+            handleDelete={handleDelete}
+          />
         </div>
       }
       {

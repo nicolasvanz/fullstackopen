@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blog, handleBlogLike }) => {
+const Blog = ({ blog, handleBlogLike, handleDelete }) => {
   const [visible, setVisible] = useState(false)
   const blogStyle = {
     paddingTop: 10,
@@ -27,20 +27,26 @@ const Blog = ({ blog, handleBlogLike }) => {
         </div>
         :
         <div style={blogStyle}>
-          <p>{blog.title} <button onClick={toggleVisible}>hide</button></p>
+          <p>{blog.title} {blog.author}<button onClick={toggleVisible}>hide</button></p>
           <p>{blog.url}</p>
           <p>likes {blog.likes}<button onClick={() => handleBlogLike(blog)}>like</button></p>
           <p>{blog?.user?.username}</p>
+          <button onClick={() => handleDelete(blog)}>remove</button>
         </div>
       }
     </>
   )
 }
 
-const BlogList = ({ blogs, handleBlogLike }) => (
+const BlogList = ({ blogs, handleBlogLike, handleDelete }) => (
   <>
     {blogs.map(blog =>
-      <Blog key={blog.id} blog={blog} handleBlogLike={handleBlogLike}/>
+      <Blog
+        key={blog.id}
+        blog={blog}
+        handleBlogLike={handleBlogLike}
+        handleDelete={handleDelete}
+      />
     )}
   </>
 )
