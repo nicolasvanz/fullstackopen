@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from "react"
 
-import BlogList from './components/Blog'
-import LoginForm from './components/LoginForm'
-import Notification from './components/Notification'
-import NewBlogForm from './components/NewBlogForm'
-import Togglable from './components/Togglable'
+import BlogList from "./components/Blog"
+import LoginForm from "./components/LoginForm"
+import Notification from "./components/Notification"
+import NewBlogForm from "./components/NewBlogForm"
+import Togglable from "./components/Togglable"
 
-import blogService from './services/blogs'
-import loginService from './services/login'
+import blogService from "./services/blogs"
+import loginService from "./services/login"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -24,7 +24,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try{
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
       notify("user logged in")
       setUser(user)
       setUsername("")
@@ -79,7 +79,7 @@ ${exception.response.data.error}`, false)
       setBlogs(blogs.concat(createdBlog))
       newBlogRef.current.toggleVisibility()
     } catch (exception) {
-      notify(`couldn't create blog: ${exception.response.data.error}`, false)
+      notify(`couldn"t create blog: ${exception.response.data.error}`, false)
     }
   }
 
@@ -100,11 +100,11 @@ ${exception.response.data.error}`, false)
   }
 
   const addLikeToBlog = async (blog) => {
-    const likedBlog = {...blog, likes: blog.likes + 1}
-    
+    const likedBlog = { ...blog, likes: blog.likes + 1 }
+
     const updatedBlog = await blogService
       .update(likedBlog)
-    
+
     setBlogs(blogs.map(blog => blog.id === updatedBlog.id ? updatedBlog : blog))
   }
 
@@ -151,7 +151,7 @@ ${exception.response.data.error}`, false)
       {
         !user &&
         <LoginForm
-          handleLogin={handleLogin} 
+          handleLogin={handleLogin}
           username={username}
           setUsername={setUsername}
           password={password}

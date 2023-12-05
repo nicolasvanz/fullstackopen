@@ -1,5 +1,5 @@
 const LoginForm = ({
-  username, 
+  username,
   setUsername,
   password,
   setPassword,
