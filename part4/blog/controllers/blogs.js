@@ -24,6 +24,7 @@ blogRouter.post("/", middleware.userExtractor, async (request, response) => {
   user.blogs = user.blogs.concat(savedBlog.id)
   await user.save()
 
+  await Blog.populate(savedBlog, { path: "user" })
   response.status(201).json(savedBlog)
 })
 

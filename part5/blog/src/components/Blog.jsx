@@ -30,7 +30,7 @@ const Blog = ({ blog, handleBlogLike }) => {
           <p>{blog.title} <button onClick={toggleVisible}>hide</button></p>
           <p>{blog.url}</p>
           <p>likes {blog.likes}<button onClick={() => handleBlogLike(blog)}>like</button></p>
-          <p>{blog.author}</p>
+          <p>{blog?.user?.username}</p>
         </div>
       }
     </>
