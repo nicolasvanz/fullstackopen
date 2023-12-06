@@ -19,14 +19,14 @@ const Blog = ({ blog, handleBlogLike, handleDelete }) => {
       {
         !visible
           ?
-          <div style={blogStyle}>
+          <div style={blogStyle} className="blogBrief">
             <div>
               {blog.title} {blog.author}
               <button onClick={toggleVisible}>view</button>
             </div>
           </div>
           :
-          <div style={blogStyle}>
+          <div style={blogStyle} className="blogDetail">
             <p>{blog.title} {blog.author}<button onClick={toggleVisible}>hide</button></p>
             <p>{blog.url}</p>
             <p>likes {blog.likes}<button onClick={() => handleBlogLike(blog)}>like</button></p>

@@ -7,6 +7,8 @@ import BlogList from "./Blog"
 
 describe("<Blog />", () => {
   let container
+  let handleBlogLikeMock
+
   const blog = {
     title: "test-title",
     author: "nicolas",
@@ -20,9 +22,11 @@ describe("<Blog />", () => {
   }
 
   beforeEach(() => {
+    handleBlogLikeMock = jest.fn()
     container = render(
       <BlogList
         blogs={[blog]}
+        handleBlogLike={handleBlogLikeMock}
       />
     ).container
   })
@@ -45,4 +49,19 @@ describe("<Blog />", () => {
     screen.getByText(`likes ${blog.likes}`)
     screen.getByText(blog.url)
   })
+
+  test("if like button is clicked twice, the event handler is called twice",
+    async () => {
+      const user = userEvent.setup()
+      const viewButton = screen.getByText("view")
+
+      await user.click(viewButton)
+
+      const likeButton = screen.getByText("like")
+
+      await user.click(likeButton)
+      await user.click(likeButton)
+
+      expect(handleBlogLikeMock.mock.calls).toHaveLength(2)
+    })
 })
