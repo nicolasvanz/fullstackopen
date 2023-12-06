@@ -34,4 +34,15 @@ describe("<Blog />", () => {
 
     expect(titleAuthorDiv).toBeDefined()
   })
+
+  test("renders likes and url after clicking on the view", async () => {
+    const user = userEvent.setup()
+    const viewButton = screen.getByText("view")
+
+    await user.click(viewButton)
+
+    screen.getByText(`${blog.title} ${blog.author}`)
+    screen.getByText(`likes ${blog.likes}`)
+    screen.getByText(blog.url)
+  })
 })
