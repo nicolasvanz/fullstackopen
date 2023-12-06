@@ -11,7 +11,7 @@ const getAll = () => {
   const request = axios.get(baseUrl)
   const nonExisting = {
     id: 10000,
-    content: "this note is not saved to the server",
+    content: 'this note is not saved to the server',
     important: true
   }
   return request.then(response => response.data.concat(nonExisting))
@@ -19,7 +19,7 @@ const getAll = () => {
 
 const create = async newObject => {
   const config = {
-    headers: { Authorization: token ,}
+    headers: { Authorization: token }
   }
 
   const response = await axios.post(baseUrl, newObject, config)
@@ -31,7 +31,7 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
-export default { 
+export default {
   getAll,
   create,
   update,

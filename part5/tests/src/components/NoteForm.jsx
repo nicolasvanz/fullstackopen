@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const NoteForm = ({ createNote }) => {
-  const [newNote, setNewNote] = useState("")
+  const [newNote, setNewNote] = useState('')
 
   const addNote = (event) => {
     event.preventDefault()
@@ -10,7 +10,7 @@ const NoteForm = ({ createNote }) => {
       important: true
     })
 
-    setNewNote("")
+    setNewNote('')
   }
 
   return (
@@ -18,11 +18,12 @@ const NoteForm = ({ createNote }) => {
       <h2>create a new note</h2>
 
       <form onSubmit={addNote}>
-        <input 
+        <input
           value={newNote}
           onChange={({ target }) => setNewNote(target.value)}
+          placeholder='write note content here'
         />
-        <button type="submit">save</button>
+        <button type='submit'>save</button>
       </form>
     </div>
   )
