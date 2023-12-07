@@ -16,9 +16,6 @@ const App = () => {
   const [password, setPassword] = useState("")
   const [notifyMessage, setNotifyMesssage] = useState(null)
   const [notifySuccess, setNotifySuccess] = useState(false)
-  const [newBlogTitle, setNewBlogTitle] = useState("")
-  const [newBlogAuthor, setNewBlogAuthor] = useState("")
-  const [newBlogUrl, setNewBlogUrl] = useState("")
   const newBlogRef = useRef()
 
   useEffect(() => {
@@ -66,13 +63,7 @@ ${exception.response.data.error}`, false)
     blogService.setToken(null)
   }
 
-  const createNewBlog = async (event) => {
-    event.preventDefault()
-    const newBlog = {
-      title: newBlogTitle,
-      author: newBlogAuthor,
-      url: newBlogUrl
-    }
+  const createNewBlog = async (newBlog) => {
     try {
       const createdBlog = await blogService.create(newBlog)
       notify(`a new blog '${createdBlog.title}' by ${createdBlog.author} added`)
@@ -87,13 +78,7 @@ ${exception.response.data.error}`, false)
     return (
       <Togglable buttonLabel="new blog" ref={newBlogRef}>
         <NewBlogForm
-          title={newBlogTitle}
-          setTitle={setNewBlogTitle}
-          author={newBlogAuthor}
-          setAuthor={setNewBlogAuthor}
-          url={newBlogUrl}
-          setUrl={setNewBlogUrl}
-          onSubmit={createNewBlog}
+          createBlogFn={createNewBlog}
         />
       </Togglable>
     )
