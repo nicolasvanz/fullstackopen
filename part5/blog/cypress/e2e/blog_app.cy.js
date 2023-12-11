@@ -93,6 +93,26 @@ describe("Blog app", () => {
         cy.get("@likeButton").parent()
           .should("include.text", "likes 1")
       })
+
+      it("the blog can be deleted by the user that created it", () => {
+        cy.contains("view").as("viewButton")
+        cy.get("@viewButton").click()
+        cy.contains("remove").click()
+        cy.get("@viewButton").should("not.exist")
+        cy.get(".success")
+      })
+
+      it("remove button is only visible for the blog creator", () => {
+        const tempUser = {
+          username: "tempUserUsername",
+          name: "tempUser",
+          password: "temp123456789"
+        }
+        cy.request("POST", `${Cypress.env("BACKEND_API_URL")}/users`, tempUser)
+        cy.login(tempUser)
+        cy.contains("view").click()
+        cy.contains("remove").should("not.exist")
+      })
     })
   })
 })

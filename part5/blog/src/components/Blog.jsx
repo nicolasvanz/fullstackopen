@@ -1,5 +1,7 @@
 import { useState } from "react"
 
+import blogService from "../services/blogs"
+
 const Blog = ({ blog, handleBlogLike, handleDelete }) => {
   const [visible, setVisible] = useState(false)
   const blogStyle = {
@@ -32,7 +34,7 @@ const Blog = ({ blog, handleBlogLike, handleDelete }) => {
             <p>likes {blog.likes}<button onClick={() => handleBlogLike(blog)}>like</button></p>
             <p>{blog?.user?.username}</p>
             {
-              JSON.parse(window.localStorage.getItem("user")).id === blog.id
+              blogService.getUsername() === blog.user.username
               &&
               <button onClick={() => handleDelete(blog)} id="likeButton">remove</button>
             }

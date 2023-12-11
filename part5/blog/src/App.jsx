@@ -30,6 +30,7 @@ const App = () => {
       const user = JSON.parse(userJSON)
       setUser(user)
       blogService.setToken(user.token)
+      blogService.setUsername(user.username)
     }
   }, [])
 
@@ -50,6 +51,7 @@ const App = () => {
       setUsername("")
       setPassword("")
       blogService.setToken(user.token)
+      blogService.setUsername(user.username)
       window.localStorage.setItem("user", JSON.stringify(user))
     } catch (exception) {
       notify(`Couldn't log in: ${exception.response.status} - \
