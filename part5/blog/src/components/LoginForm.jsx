@@ -7,7 +7,7 @@ const LoginForm = ({
 }) => (
   <>
     <h1>log in to application</h1>
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleLogin} id="loginForm">
       <div>
         <label>username</label>
         <input
