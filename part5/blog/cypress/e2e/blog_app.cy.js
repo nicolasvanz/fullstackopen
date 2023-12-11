@@ -114,5 +114,45 @@ describe("Blog app", () => {
         cy.contains("remove").should("not.exist")
       })
     })
+
+    describe("with multiple blogs", () => {
+      beforeEach(() => {
+        const newBlogs = [
+          {
+            title: "title1",
+            author: "author1",
+            url: "url1"
+          },
+          {
+            title: "title2",
+            author: "author2",
+            url: "url2"
+          },
+        ]
+        const token = `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
+        for (let i = 0; i < newBlogs.length; i++) {
+          cy.request({
+            method: "POST",
+            url: `${Cypress.env("BACKEND_API_URL")}/blogs`,
+            headers: {
+              authorization: token
+            },
+            body: newBlogs[i]
+          })
+          cy.visit(Cypress.env("HOMEPAGE"))
+        }
+      })
+
+      it("blogs are ordered by likes", () => {
+        cy.contains("view").click()
+        cy.contains("view").click()
+
+        cy.get(".blogDetail").eq(0).should("contain", "title1").as("blog1")
+        cy.get(".blogDetail").eq(1).should("contain", "title2").as("blog2")
+
+        cy.get(".likeButton").eq(1).click()
+        cy.get(".blogDetail").eq(0).should("contain", "title2")
+      })
+    })
   })
 })

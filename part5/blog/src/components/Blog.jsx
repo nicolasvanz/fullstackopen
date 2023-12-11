@@ -31,12 +31,12 @@ const Blog = ({ blog, handleBlogLike, handleDelete }) => {
           <div style={blogStyle} className="blogDetail">
             <p>{blog.title} {blog.author}<button onClick={toggleVisible}>hide</button></p>
             <p>{blog.url}</p>
-            <p>likes {blog.likes}<button onClick={() => handleBlogLike(blog)}>like</button></p>
+            <p>likes {blog.likes}<button className="likeButton" onClick={() => handleBlogLike(blog)}>like</button></p>
             <p>{blog?.user?.username}</p>
             {
               blogService.getUsername() === blog.user.username
               &&
-              <button onClick={() => handleDelete(blog)} id="likeButton">remove</button>
+              <button onClick={() => handleDelete(blog)}>remove</button>
             }
           </div>
       }
