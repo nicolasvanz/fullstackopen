@@ -1,11 +1,15 @@
 const validUserCredentials = {
-  username: "root",
-  password: "root123"
+  username: "testUserName",
+  name: "testName",
+  password: "123test123"
 }
 
 describe("Blog app", () => {
   beforeEach(() => {
     cy.request("POST", `${Cypress.env("BACKEND_API_URL")}/testing/reset`)
+    cy.request(
+      "POST", `${Cypress.env("BACKEND_API_URL")}/users`, validUserCredentials
+    )
     cy.visit("http://127.0.0.1:5173")
   })
 
@@ -18,9 +22,7 @@ describe("Blog app", () => {
       cy.get("input[name=username]").type(validUserCredentials.username)
       cy.get("input[name=password]").type(validUserCredentials.password)
       cy.get("button[type=\"submit\"]").click()
-      cy.get(".error")
-        .contains("invalid credentials")
-        .and("have.css", "color", "rgb(255, 0, 0)")
+      cy.get(".success")
     })
 
     describe("fails with wrong credentials", () => {
@@ -41,6 +43,29 @@ describe("Blog app", () => {
           .contains("invalid credentials")
           .and("have.css", "color", "rgb(255, 0, 0)")
       })
+    })
+  })
+
+  describe("when logged in", () => {
+    beforeEach(() => {
+      cy.login(validUserCredentials)
+    })
+
+    it("a blog can be created", () => {
+      const newBlogProps = {
+        title: "newBlogTestTitle",
+        author: "newBlogTestAuthor",
+        url: "newBlogTestUrl",
+      }
+      cy.contains("new blog").click()
+      cy.get("input[name=title]").type(newBlogProps.title)
+      cy.get("input[name=author]").type(newBlogProps.author)
+      cy.get("input[name=url]").type(newBlogProps.url)
+      cy.get("button[type=submit]").click()
+
+      cy.get(".success")
+      cy.contains(`${newBlogProps.title} ${newBlogProps.author}`)
+      cy.contains("view")
     })
   })
 })
