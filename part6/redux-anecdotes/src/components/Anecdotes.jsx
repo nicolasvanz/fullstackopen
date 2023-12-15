@@ -6,10 +6,11 @@ const Anecdotes = () => {
   const anecdotes = useSelector(state => state)
   const dispatch = useDispatch()
 
+  const orderedAnecdotes = anecdotes.sort((a, b) => b.votes - a.votes)
   return (
     <>
     <h2>Anecdotes</h2>
-    {anecdotes.map(anecdote =>
+    {orderedAnecdotes.map(anecdote =>
       <Anecdote
         key={anecdote.id}
         anecdote={anecdote}
