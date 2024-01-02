@@ -19,7 +19,7 @@ const Anecdotes = () => {
         anecdote={anecdote}
         handleVote={() => {
           dispatch(voteAnecdote(anecdote.id))
-          notify(dispatch, `you voted '${anecdote.content}'`)
+          dispatch(notify(`you voted '${anecdote.content}'`))
         }}
       />
     )}
