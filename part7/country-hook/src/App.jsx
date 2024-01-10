@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import countriesService from './services/countries'
-import axios from 'axios'
+
 
 const useField = (type) => {
   const [value, setValue] = useState('')
