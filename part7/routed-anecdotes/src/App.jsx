@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Routes, Route, Link, useMatch, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { notify } from './reducers/notification'
+import { initializeAnecdotes, createAnecdote } from './reducers/anecdotes'
 import { useField } from './hooks'
 
 const Menu = () => {
@@ -89,8 +89,7 @@ const CreateNew = (props) => {
     props.addNew({
       content: content.value,
       author: author.value,
-      info: info.value,
-      votes: 0
+      info: info.value
     })
   }
 
@@ -131,30 +130,16 @@ const Notification = () => {
 }
 
 const App = () => {
-  const [anecdotes, setAnecdotes] = useState([
-    {
-      content: 'If it hurts, do it more often',
-      author: 'Jez Humble',
-      info: 'https://martinfowler.com/bliki/FrequencyReducesDifficulty.html',
-      votes: 0,
-      id: 1
-    },
-    {
-      content: 'Premature optimization is the root of all evil',
-      author: 'Donald Knuth',
-      info: 'http://wiki.c2.com/?PrematureOptimization',
-      votes: 0,
-      id: 2
-    }
-  ])
-
+  const anecdotes = useSelector((state) => state.anecdotes)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    dispatch(initializeAnecdotes())
+  }, [])
+
   const addNew = (anecdote) => {
-    anecdote.id = Math.round(Math.random() * 10000)
-    setAnecdotes(anecdotes.concat(anecdote))
-    dispatch(notify('a new anecdote was created'))
+    dispatch(createAnecdote(anecdote))
     navigate('/')
   }
 
@@ -172,9 +157,7 @@ const App = () => {
   }
 
   const anecdoteMatch = useMatch('/anecdotes/:id')
-  const anecdote = anecdoteMatch
-    ? anecdoteById(Number(anecdoteMatch.params.id))
-    : null
+  const anecdote = anecdoteMatch ? anecdoteById(anecdoteMatch.params.id) : null
 
   return (
     <div>
