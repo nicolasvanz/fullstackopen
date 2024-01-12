@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Routes, Route, Link, useMatch, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
+import { notify } from './reducers/notification'
 import { useField } from './hooks'
 
 const Menu = () => {
@@ -123,7 +125,8 @@ const CreateNew = (props) => {
   )
 }
 
-const Notification = ({ message }) => {
+const Notification = () => {
+  const message = useSelector((state) => state.notification)
   return <p>{message}</p>
 }
 
@@ -146,12 +149,12 @@ const App = () => {
   ])
 
   const navigate = useNavigate()
-  const [notification, setNotification] = useState('')
+  const dispatch = useDispatch()
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
-    setNotification('a new anecdote was created')
+    dispatch(notify('a new anecdote was created'))
     navigate('/')
   }
 
@@ -177,7 +180,7 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
-      <Notification message={notification} />
+      <Notification />
       <Routes>
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route
