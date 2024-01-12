@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react'
 import { Routes, Route, Link, useMatch, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { initializeAnecdotes, createAnecdote } from './reducers/anecdotes'
+import {
+  initializeAnecdotes,
+  createAnecdote,
+  deleteAnecdote,
+  voteAnecdote
+} from './reducers/anecdotes'
 import { useField } from './hooks'
 
 const Menu = () => {
@@ -25,26 +30,43 @@ const Menu = () => {
 }
 
 const Anecdote = ({ anecdote }) => {
+  const dispatch = useDispatch()
+
+  const handleVote = () => {
+    dispatch(voteAnecdote(anecdote.id))
+  }
+
   return (
     <div>
-      <p>has {anecdote.votes} votes</p>
+      <p>
+        has {anecdote.votes} votes <button onClick={handleVote}>vote</button>
+      </p>
       <p>for more info see {anecdote.info}</p>
     </div>
   )
 }
 
-const AnecdoteList = ({ anecdotes }) => (
-  <div>
-    <h2>Anecdotes</h2>
-    <ul>
-      {anecdotes.map((anecdote) => (
-        <li key={anecdote.id}>
-          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
-        </li>
-      ))}
-    </ul>
-  </div>
-)
+const AnecdoteList = ({ anecdotes }) => {
+  const dispatch = useDispatch()
+
+  const handleDelete = (id) => {
+    dispatch(deleteAnecdote(id))
+  }
+
+  return (
+    <div>
+      <h2>Anecdotes</h2>
+      <ul>
+        {anecdotes.map((anecdote) => (
+          <li key={anecdote.id}>
+            <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+            <button onClick={() => handleDelete(anecdote.id)}>delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 const About = () => (
   <div>
@@ -145,19 +167,12 @@ const App = () => {
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id)
 
-  const vote = (id) => {
-    const anecdote = anecdoteById(id)
-
-    const voted = {
-      ...anecdote,
-      votes: anecdote.votes + 1
-    }
-
-    setAnecdotes(anecdotes.map((a) => (a.id === id ? voted : a)))
-  }
-
   const anecdoteMatch = useMatch('/anecdotes/:id')
   const anecdote = anecdoteMatch ? anecdoteById(anecdoteMatch.params.id) : null
+
+  if (anecdotes.length === 0) {
+    return <div>loading data...</div>
+  }
 
   return (
     <div>

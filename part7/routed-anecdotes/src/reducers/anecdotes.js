@@ -35,6 +35,30 @@ export const createAnecdote = (anecdote) => {
   }
 }
 
+export const voteAnecdote = (id) => {
+  return async (dispatch, getState) => {
+    const currState = getState().anecdotes
+    const anecdoteToVote = currState.find((anecdote) => anecdote.id === id)
+    const votedAnecdote = { ...anecdoteToVote, votes: anecdoteToVote.votes + 1 }
+    const savedAnecdote = await anecdotesService.updateAnecdote(votedAnecdote)
+    const nextState = currState.map((anecdote) =>
+      anecdote.id !== id ? anecdote : savedAnecdote
+    )
+    dispatch(notify('voted on anecdote'))
+    dispatch(setAnecdotes(nextState))
+  }
+}
+
+export const deleteAnecdote = (id) => {
+  return async (dispatch, getState) => {
+    const currState = getState().anecdotes
+    await anecdotesService.deleteAnecdote(id)
+    const nextState = currState.filter((anecdote) => anecdote.id !== id)
+    dispatch(notify('deleted anecdote'))
+    dispatch(setAnecdotes(nextState))
+  }
+}
+
 export default anecdotesReducer.reducer
 
 export const { appendAnecdote, setAnecdotes } = anecdotesReducer.actions

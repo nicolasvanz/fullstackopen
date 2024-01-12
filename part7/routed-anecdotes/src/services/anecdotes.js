@@ -12,7 +12,22 @@ export const createAnecdote = async (anecdote) => {
   return response.data
 }
 
+export const deleteAnecdote = async (id) => {
+  const response = await axios.delete(`${baseUrl}/${id}`)
+  return response.data
+}
+
+export const updateAnecdote = async (anecdoteToUpdate) => {
+  const response = await axios.put(
+    `${baseUrl}/${anecdoteToUpdate.id}`,
+    anecdoteToUpdate
+  )
+  return response.data
+}
+
 export default {
   getAll,
-  createAnecdote
+  createAnecdote,
+  deleteAnecdote,
+  updateAnecdote
 }
