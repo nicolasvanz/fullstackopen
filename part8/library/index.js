@@ -115,6 +115,11 @@ const typeDefs = `
     bookCount: Int!
   }
 
+  type AuthorWithoutBookCount {
+    name: String!
+    born: Int
+  }
+
   type Query {
     bookCount: Int
     authorCount: Int
@@ -132,7 +137,7 @@ const typeDefs = `
     editAuthor(
       name: String!
       setBornTo: Int
-    ): Author
+    ): AuthorWithoutBookCount
   }
 `
 
