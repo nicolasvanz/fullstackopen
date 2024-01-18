@@ -1,25 +1,17 @@
 import { Routes, Route } from "react-router-dom"
-import { useQuery } from "@apollo/client"
 
 import Navbar from "./components/Navbar"
 import Authors from "./components/Authors"
-import { ALL_AUTHORS } from "./queries"
+import Books from "./components/Books"
 
 function App() {
-  const authors = useQuery(ALL_AUTHORS, {
-    pollInterval: 5000
-  })
-
-  if (authors.loading) {
-    return <div>loading...</div>
-  }
-
 
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/authors" element={<Authors authors={authors.data.allAuthors}/>}></Route>
+        <Route path="/authors" element={<Authors />}></Route>
+        <Route path="/books" element={<Books />}></Route>
       </Routes>
     </>
   )
