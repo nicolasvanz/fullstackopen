@@ -12,6 +12,9 @@ const Navbar = () => {
       <Link to={"/books"} style={paddingStyle}>
         books
       </Link>
+      <Link to={"/newBook"} style={paddingStyle}>
+        add book
+      </Link>
     </div>
   )
 }
