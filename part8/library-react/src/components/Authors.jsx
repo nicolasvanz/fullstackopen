@@ -3,7 +3,7 @@ import { useState } from "react"
 
 import { ALL_AUTHORS, EDIT_AUTHOR_BIRTH } from "../queries"
 
-const SetBirthYearForm = () => {
+const SetBirthYearForm = ({ allAuthors }) => {
   const [name, setName] = useState('')
   const [year, setYear] = useState('')
 
@@ -14,9 +14,7 @@ const SetBirthYearForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    console.log(name, year)
     editBirth({ variables: {name, setBornTo: Number(year) } })
-    setName('')
     setYear('')
   }
 
@@ -24,7 +22,13 @@ const SetBirthYearForm = () => {
     <div>
       <h2>Set Birthyear</h2>
       <form onSubmit={handleSubmit}>
-        <label>name</label><input value={name} onChange={({ target }) => setName(target.value)} /> <br />
+        <select onInput={({ target }) => setName(target.value)}>
+          {
+            allAuthors.map(author => {
+              return <option key={author.name} value={author.name}>{author.name}</option>
+            })
+          }
+        </select> <br />
         <label>born</label><input value={year} onChange={({ target }) => setYear(target.value)} /> <br />
         <button type="submit">update author</button>
       </form>
@@ -67,7 +71,7 @@ const Authors = () => {
           }
         </tbody>
       </table>
-      <SetBirthYearForm />
+      <SetBirthYearForm allAuthors={authors}/>
     </div>
   )
 }
