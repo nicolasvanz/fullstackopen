@@ -3,7 +3,9 @@ const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const _ = require("lodash")
 const { v1: uuid } = require("uuid")
+const { GraphQLError } = require("graphql")
 const mongoose = require("mongoose")
+
 const Author = require("./models/author")
 const Book = require("./models/book")
 
@@ -182,6 +184,13 @@ const resolvers = {
       if (!savedAuthor) {
         const newAuthor = new Author({ name: args.author, bookCount: 0 })
         savedAuthor = await newAuthor.save()
+          .catch((error) => {
+            throw new GraphQLError('saving author failed', {
+              extensions: {
+                error
+              }
+            })
+          })
       }
 
       savedAuthor = await Author.findByIdAndUpdate(savedAuthor._id, {
@@ -193,11 +202,25 @@ const resolvers = {
 
       const newBook = new Book({ ...args, author: savedAuthor })
       const savedBook = await newBook.save()
+        .catch((error) => {
+          throw new GraphQLError('saving book failed', {
+            extensions: {
+              error
+            }
+          })
+        })
 
       return savedBook
     },
     editAuthor: async (root, args) => {
       await Author.updateOne({ name: args.name }, { born: args.setBornTo}, { new: true })
+        .catch((error) => {
+          throw new GraphQLError('updating author failed', {
+            extensions: {
+              error
+            }
+          })
+        })
       return await Author.findOne({ name: args.name })
     }
   }
