@@ -107,7 +107,11 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError('unauthorized')
+      }
+
       let savedAuthor = await Author.findOne({ name: args.author })
       if (!savedAuthor) {
         const newAuthor = new Author({ name: args.author, bookCount: 0 })
@@ -140,7 +144,10 @@ const resolvers = {
 
       return savedBook
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError('unauthorized')
+      }
       await Author.updateOne({ name: args.name }, { born: args.setBornTo}, { new: true })
         .catch((error) => {
           throw new GraphQLError('updating author failed', {
@@ -196,7 +203,7 @@ startStandaloneServer(server, {
     const auth = req ? req.headers.authorization : null
     if (auth && auth.startsWith("Bearer ")) {
       const decodedToken = jwt.verify(auth.substring(7), process.env.JWT_SECRET)
-      const currentUser = await User.findById(decodedToken.id).populate("friends")
+      const currentUser = await User.findById(decodedToken.id)
       return { currentUser }
     }
   },

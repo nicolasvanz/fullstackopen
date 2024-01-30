@@ -23,6 +23,7 @@ const SetBirthYearForm = ({ allAuthors }) => {
       <h2>Set Birthyear</h2>
       <form onSubmit={handleSubmit}>
         <select onInput={({ target }) => setName(target.value)}>
+          <option defaultValue={''}>-- select an option --</option>
           {
             allAuthors.map(author => {
               return <option key={author.name} value={author.name}>{author.name}</option>
