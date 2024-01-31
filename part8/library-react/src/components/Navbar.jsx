@@ -33,6 +33,9 @@ const Navbar = () => {
           <Link to={"/newBook"} style={paddingStyle}>
             add book
           </Link>
+          <Link to={"/recommended"} style={paddingStyle}>
+            recommended
+          </Link>
           <button onClick={handleLogout}>logout</button>
           </>
           :

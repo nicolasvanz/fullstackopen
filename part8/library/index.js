@@ -175,7 +175,7 @@ const resolvers = {
 
       const credentialsAreValid = user && args.password === "secret"
       if (!credentialsAreValid) {
-        throw new GraphQLError("worng credentials", {
+        throw new GraphQLError("wrong credentials", {
           extensions: {
             code: "BAD_USER_INPUT"
           }

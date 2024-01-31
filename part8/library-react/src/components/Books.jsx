@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useQuery } from "@apollo/client"
 
+import BooksTable from "./BooksTable"
 import { ALL_BOOKS } from "../queries"
 
 const Books = () => {
@@ -36,28 +37,7 @@ const Books = () => {
     <div>
       <h2>Books</h2>
       { displayCurrentGenreFilter() }
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>author</th>
-            <th>published</th>
-          </tr>   
-        </thead>
-        <tbody>
-          {
-            filteredBooks.map(book => {
-              return (
-                <tr key={book.title}>
-                  <td>{book.title}</td>
-                  <td>{book.author.name}</td>
-                  <td>{book.published}</td>
-                </tr>
-              )
-            })
-          }
-        </tbody>
-      </table>
+      <BooksTable books={filteredBooks}/>
       {
         allGenres().map(genre => {
           return (
