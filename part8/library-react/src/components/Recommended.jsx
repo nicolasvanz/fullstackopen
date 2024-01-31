@@ -6,7 +6,13 @@ import { ALL_BOOKS } from "../queries"
 
 const Recommended = () => {
   const currentUserQuery = useQuery(CURRENT_USER)
-  const booksQuery = useQuery(ALL_BOOKS)
+
+  const currentUser = currentUserQuery?.data?.me
+
+  const booksQuery = useQuery(ALL_BOOKS, {
+    variables: { genre: currentUser?.favoriteGenre },
+    skip: currentUserQuery.loading
+  })
   
   if (currentUserQuery.loading) {
     return <p>loading ...</p>
@@ -16,21 +22,13 @@ const Recommended = () => {
     return <div>loading...</div>
   }
 
-  const books = booksQuery.data.allBooks
-
-  const currentUser = currentUserQuery.data.me
-
-  const filteredBooks = currentUser.favoriteGenre
-    ? books.filter(book => 
-        book.genres.includes(currentUser.favoriteGenre)
-      )
-    : books
+  const recommendedBooks = booksQuery.data.allBooks
 
   return (
     <div>
       <h2>recommendations</h2>
       <p>books in your favorite genre <b>{currentUser.favoriteGenre}</b></p>
-      <BooksTable books={filteredBooks}/>
+      <BooksTable books={recommendedBooks}/>
     </div>
   )
 }
