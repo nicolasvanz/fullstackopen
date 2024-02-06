@@ -53,4 +53,24 @@ const calculateExercises = (exercises: Array<number>, target: number): calculate
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+const parseArgs2 = () => {
+  const args = process.argv
+
+  if (args.length < 4) {
+    throw new Error("not enough values")
+  }
+
+  for (let i = 2; i < args.length; i++) {
+    if (isNaN(Number(args[i]))) {
+      throw new Error("invalid argument type")
+    }
+  }
+
+  return {
+    arg1: args.slice(3, args.length).map(n => Number(n)),
+    arg2: Number(args[2])
+  }
+}
+
+const { arg1, arg2 } = parseArgs2()
+console.log(calculateExercises(arg1, arg2))
