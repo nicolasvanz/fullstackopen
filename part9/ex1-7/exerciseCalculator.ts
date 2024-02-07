@@ -1,4 +1,4 @@
-interface calculateExerciseResult {
+export interface calculateExerciseResult {
   periodLength: number,
   trainingDays: number,
   success: boolean,
@@ -10,7 +10,7 @@ interface calculateExerciseResult {
 
 type Rating = number;
 
-const calculateExercises = (exercises: Array<number>, target: number): calculateExerciseResult => {
+export const calculateExercises = (exercises: Array<number>, target: number): calculateExerciseResult => {
   const getRating = (avg: number): Rating => {
     const index = avg/target;
 
@@ -52,25 +52,3 @@ const calculateExercises = (exercises: Array<number>, target: number): calculate
     average
   };
 };
-
-const parseArgs2 = () => {
-  const args = process.argv;
-
-  if (args.length < 4) {
-    throw new Error("not enough values");
-  }
-
-  for (let i = 2; i < args.length; i++) {
-    if (isNaN(Number(args[i]))) {
-      throw new Error("invalid argument type");
-    }
-  }
-
-  return {
-    arg1: args.slice(3, args.length).map(n => Number(n)),
-    arg2: Number(args[2])
-  };
-};
-
-const { arg1, arg2 } = parseArgs2();
-console.log(calculateExercises(arg1, arg2));
