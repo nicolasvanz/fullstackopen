@@ -1,4 +1,5 @@
-const calculateBmi = (height: number, weight: number) : string => {
+export const calculateBmi = (args: Array<string | number>) : string => {
+  const { height, weight } = parseArgs(args)
   const bmi = weight/(height/100)**2
 
   if (bmi < 18.5) {
@@ -12,25 +13,20 @@ const calculateBmi = (height: number, weight: number) : string => {
   }
 }
 
-const parseArgs = () => {
-  const args = process.argv
-
-  if (args.length > 4)
+const parseArgs = (args: Array<string | number>) => {
+  if (args.length > 2)
     throw new Error("too many arguments")
-  else if (args.length < 4)
+  else if (args.length < 2)
     throw new Error("not enough arguments")
 
-  const castedArg1 = Number(args[2])
-  const castedArg2 = Number(args[3])
-  
+  const castedArg1 = Number(args[0])
+  const castedArg2 = Number(args[1])
+
   if (!isNaN(castedArg1) && !isNaN(castedArg2)) {
     return {
-      arg1: castedArg1, arg2: castedArg2
+      height: castedArg1, weight: castedArg2
     }
   } else {
     throw new Error("invalid argument type")
   }
 }
-
-const { arg1, arg2 } = parseArgs()
-console.log(calculateBmi(arg1, arg2))
