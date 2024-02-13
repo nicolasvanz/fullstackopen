@@ -71,7 +71,7 @@ const NewDiaryForm = () => {
       <h2>add new entry</h2>
       <p style={messageStyle}>{message.status === "idle" ? null : message.message }</p>
       <form onSubmit={handleSubmit}>
-        date <input value={date} onChange={({ target }) => setDate(target.value)}/>
+        date <input type="date" value={date} onChange={({ target }) => setDate(target.value)}/>
         <br />
         visibility
         <select value={visibility} onChange={({ target }) => setVisibility(parseVisibility(target.value))}>
