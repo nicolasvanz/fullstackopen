@@ -10,9 +10,21 @@ export const getAllNonSensetivePatients = (): NonSensetivePatient[] => {
   ));
 };
 
+export const findNonSensetivePatientById = (id: string): NonSensetivePatient => {
+  const patient = findPatientById(id);
+  const { entries, ssn, ...nonSensetivePatient } = patient;
+  return nonSensetivePatient;
+};
+
+export const findPatientById = (id: string): Patient => {
+  const patient = patients.find(patient => patient.id === id);
+  if (!patient)
+    throw new Error("invalid patient id");
+  return patient;
+};
+
 export const addPatient = (patient: NewPatientEntry): Patient => {
-  /* eslint-disable-next-line @typescript-eslint/no-unsafe-call */
-  const newPatientId: string = uuid() as string;
+  const newPatientId: string = uuid();
   const newPatient: Patient = {
     ...patient,
     id: newPatientId
