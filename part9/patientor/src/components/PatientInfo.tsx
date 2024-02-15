@@ -2,14 +2,35 @@ import { useEffect, useState } from "react";
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 
-import {Patient} from "../types";
+import {Entry, Patient} from "../types";
 import patientsService from "../services/patients";
 
-interface Props {
+interface PatientInfoProps {
   patientId: string
 }
 
-const PatientInfo = (props: Props) => {
+interface PatientEntryProps {
+  entry: Entry
+}
+
+const PatientEntry = (props: PatientEntryProps) => {
+  const entry = props.entry;
+  return (
+    <div>
+      <p>{entry.date} {entry.description}</p>
+      <ul>
+        {
+          entry.diagnosisCodes &&
+          entry.diagnosisCodes.map(dc =>
+          <li key={dc}>{dc}</li>
+          )
+        }
+      </ul>
+    </div>
+  );
+};
+
+const PatientInfo = (props: PatientInfoProps) => {
   const [patient, setPatient] = useState<Patient>();
 
   useEffect(() => {
@@ -30,6 +51,12 @@ const PatientInfo = (props: Props) => {
         </h2>
         <p>ssh: {patient.ssn}</p>
         <p>occupation: {patient.occupation}</p>
+        <h3>Entries</h3>
+        {
+          patient.entries.map(entry =>
+            <PatientEntry key={entry.id} entry={entry}/>
+          )
+        }
       </div>
     );
   else
