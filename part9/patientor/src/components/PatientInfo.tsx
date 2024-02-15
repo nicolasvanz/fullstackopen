@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 
-import {Entry, Patient} from "../types";
+import {Diagnosis, Entry, Patient} from "../types";
 import patientsService from "../services/patients";
+import diagnosesService from "../services/diagnoses";
 
 interface PatientInfoProps {
   patientId: string
@@ -15,15 +16,31 @@ interface PatientEntryProps {
 
 const PatientEntry = (props: PatientEntryProps) => {
   const entry = props.entry;
+  const [diagnoses, setDiagnoses] = useState<Array<Diagnosis>>([]);
+
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      const diagnoses = await diagnosesService.getAll();
+      setDiagnoses(diagnoses);
+
+    };
+    fetchDiagnoses();
+  });
+
+  const findDiagnoseByCode = (code: Diagnosis["code"]): Diagnosis | undefined => {
+    return diagnoses.find(d => d.code === code);
+  };
+
   return (
     <div>
       <p>{entry.date} {entry.description}</p>
       <ul>
         {
           entry.diagnosisCodes &&
-          entry.diagnosisCodes.map(dc =>
-          <li key={dc}>{dc}</li>
-          )
+          entry.diagnosisCodes.map(dc => {
+            const diagnosisObject = findDiagnoseByCode(dc);
+            return <li key={dc}>{dc} {diagnosisObject ? diagnosisObject.name : null}</li>;
+          })
         }
       </ul>
     </div>
