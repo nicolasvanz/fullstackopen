@@ -1,4 +1,4 @@
-import { Gender, NewPatientEntry } from "./types";
+import { Gender, NewPatientEntry } from "../../types";
 
 export const toPatientEntry = (object: unknown): NewPatientEntry => {
   if (!object || typeof object !== "object") {

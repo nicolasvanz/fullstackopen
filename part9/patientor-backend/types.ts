@@ -51,8 +51,6 @@ export interface OccupationalHealthcareEntry extends BaseEntry {
   sickLeave?: SickLeave
 }
 
-export type Entry = HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
-
 export interface Patient {
   id: string;
   name: string;
@@ -67,6 +65,13 @@ export type NewPatientEntry = Omit<Patient, 'id'>;
 
 export type NonSensetivePatient = Omit<Patient, 'ssn' | 'entries'>;
 
-export type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+export type Entry = HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
+export const ENTRY_TYPES = ["Hospital", "OccupationalHealthcare", "HealthCheck"] as const;
+export type EntryType = Entry["type"];
 
 export type EntryWithoutId = UnionOmit<Entry, 'id'>;
+export type HospitalEntryWithoutId = UnionOmit<HospitalEntry, 'id'>;
+export type OccupationalHealthcareEntryWithoutId = UnionOmit<OccupationalHealthcareEntry, 'id'>;
+export type HealthCheckEntryWithoutId = UnionOmit<HealthCheckEntry, 'id'>;
+export type BaseEntryWithoutId = UnionOmit<BaseEntry, 'id'>;

@@ -10,7 +10,7 @@ import {
   HospitalEntryWithoutId,
   OccupationalHealthcareEntryWithoutId,
   SickLeave
-} from "./types";
+} from "../../types";
 
 export const assertNever = (value: never): never => {
   throw new Error(
@@ -18,7 +18,7 @@ export const assertNever = (value: never): never => {
   );
 };
 
-export const toEntryWithoutId = (obj: unknown): EntryWithoutId => {
+const toEntryWithoutId = (obj: unknown): EntryWithoutId => {
   if (!obj || typeof obj !== "object")
     throw new Error("incorrect or missing data");
 
@@ -116,7 +116,7 @@ const parseEmployerName = (employerName: unknown): string => {
 };
 
 const parseHealthCheckRating = (healthCheckRating: unknown): HealthCheckRating => {
-  if (!isString(healthCheckRating) || !isNumber(healthCheckRating) || !isHealthCheckRating(healthCheckRating))
+  if (!(isNumber(healthCheckRating) || isString(healthCheckRating)) || !isHealthCheckRating(healthCheckRating))
     throw new Error("bad health check rating");
   return healthCheckRating;
 };
@@ -157,7 +157,7 @@ const parseDischargeCriteria = (criteria: unknown): string => {
   return criteria;
 };
 
-const isHealthCheckRating = (param: number): param is HealthCheckRating => {
+const isHealthCheckRating = (param: number | string): param is HealthCheckRating => {
   return Object.values(HealthCheckRating).includes(param);
 };
 
@@ -176,3 +176,5 @@ const isNumber = (param: unknown): param is number => {
 const isString = (param: unknown): param is string => {
   return typeof param === "string" || param instanceof String;
 };
+
+export default toEntryWithoutId;

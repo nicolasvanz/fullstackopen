@@ -1,8 +1,8 @@
 import express from "express";
 
-import { findPatientById, getAllNonSensetivePatients } from "../services/patientsService";
-import toPatientEntry from "../../utils";
-import { addPatient } from "../services/patientsService";
+import { findPatientById, getAllNonSensetivePatients, addPatient, addEntryToPatient } from "../services/patientsService";
+import toPatientEntry from "../parsers/patientParser";
+import toEntryWithoutId from "../parsers/entryParser";
 
 const router = express.Router();
 
@@ -18,6 +18,18 @@ router.get("/:id", (req, res) => {
   } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message});
+    }
+  }
+});
+
+router.post("/:id/entries", (req, res) => {
+  try {
+    const entry = toEntryWithoutId(req.body);
+    const savedEntry = addEntryToPatient(req.params.id, entry);
+    res.json(savedEntry);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
     }
   }
 });
