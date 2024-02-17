@@ -110,13 +110,13 @@ const parseSickLeave = (sickLeave: unknown): SickLeave => {
 };
 
 const parseEmployerName = (employerName: unknown): string => {
-  if (!isString(employerName))
+  if (!isNonEmptyString(employerName))
     throw new Error("bad employer name input");
   return employerName;
 };
 
 const parseHealthCheckRating = (healthCheckRating: unknown): HealthCheckRating => {
-  if (!(isNumber(healthCheckRating) || isString(healthCheckRating)) || !isHealthCheckRating(healthCheckRating))
+  if (!(isNumber(healthCheckRating) || isNonEmptyString(healthCheckRating)) || !isHealthCheckRating(healthCheckRating))
     throw new Error("bad health check rating");
   return healthCheckRating;
 };
@@ -128,31 +128,31 @@ const parseDiagnoses = (diagnoses: unknown): Array<Diagnosis["code"]> => {
 };
 
 const parseType = (type: unknown): EntryType => {
-  if (!isString(type) || !isType(type))
+  if (!isNonEmptyString(type) || !isType(type))
     throw new Error("bad type input");
   return type;
 };
 
 const parseDescription = (description: unknown): string => {
-  if (!isString(description))
+  if (!isNonEmptyString(description))
     throw new Error("bad description input");
   return description;
 };
 
 const parseDate = (date: unknown): string => {
-  if (!isString(date) || !isDate(date))
+  if (!isNonEmptyString(date) || !isDate(date))
     throw new Error("bad date input");
   return date;
 };
 
 const parseSpecialist = (specialist: unknown): string => {
-  if (!isString(specialist))
+  if (!isNonEmptyString(specialist))
     throw new Error("bad specialist input");
   return specialist;
 };
 
 const parseDischargeCriteria = (criteria: unknown): string => {
-  if (!isString(criteria))
+  if (!isNonEmptyString(criteria))
     throw new Error("bad discharge criteria input");
   return criteria;
 };
@@ -175,6 +175,10 @@ const isNumber = (param: unknown): param is number => {
 
 const isString = (param: unknown): param is string => {
   return typeof param === "string" || param instanceof String;
+};
+
+const isNonEmptyString = (param: unknown): param is string => {
+  return isString(param) && param !== "";
 };
 
 export default toEntryWithoutId;

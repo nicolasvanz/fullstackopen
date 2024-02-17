@@ -12,6 +12,8 @@ import patientsService from "../services/patients";
 import diagnosesService from "../services/diagnoses";
 import { assertNever } from "../utils";
 
+import AddEntryForm from "./AddEntryForm";
+
 interface PatientInfoProps {
   patientId: string
 }
@@ -168,6 +170,7 @@ const PatientInfo = (props: PatientInfoProps) => {
         </h2>
         <p>ssh: {patient.ssn}</p>
         <p>occupation: {patient.occupation}</p>
+        <AddEntryForm patient={patient}/>
         <h3>Entries</h3>
         {
           patient.entries.map(entry =>
