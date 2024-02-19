@@ -170,7 +170,7 @@ const PatientInfo = (props: PatientInfoProps) => {
         </h2>
         <p>ssh: {patient.ssn}</p>
         <p>occupation: {patient.occupation}</p>
-        <AddEntryForm patient={patient}/>
+        <AddEntryForm patient={patient} diagnoses={diagnoses}/>
         <h3>Entries</h3>
         {
           patient.entries.map(entry => {

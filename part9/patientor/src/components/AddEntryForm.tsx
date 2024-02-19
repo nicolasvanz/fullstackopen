@@ -1,15 +1,15 @@
 import { SyntheticEvent, useState } from "react";
-import { Alert, Box } from "@mui/material";
-import { TextField, Button, Select, MenuItem } from "@mui/material";
+import { Alert, Box, SelectChangeEvent } from "@mui/material";
+import { TextField, Button, Select, MenuItem, OutlinedInput, Checkbox, ListItemText } from "@mui/material";
 
 import { Diagnosis, EntryWithoutId, Patient, Entry, ENTRY_TYPES, EntryType } from "../types";
 import patientsService from "../services/patients";
 import { AxiosError } from "axios";
-import { OnlinePredictionOutlined } from "@mui/icons-material";
 import { assertNever } from "../utils";
 
 interface AddEntryFormProps {
-  patient: Patient
+  patient: Patient,
+  diagnoses: Array<Diagnosis>
 }
 
 const AddEntryForm = (props: AddEntryFormProps) => {
@@ -123,6 +123,7 @@ const AddEntryForm = (props: AddEntryFormProps) => {
           <TextField
             variant="standard"
             label="discharge date"
+            type="date"
             fullWidth
             value={dischargeDate}
             onChange={({ target }) => setDischargeDate(target.value)}
@@ -149,6 +150,7 @@ const AddEntryForm = (props: AddEntryFormProps) => {
           <TextField
             variant="standard"
             label="sick leave start date"
+            type="date"
             fullWidth
             value={sickLeaveStartDate}
             onChange={({ target }) => setSickLeaveStartDate(target.value)}
@@ -156,6 +158,7 @@ const AddEntryForm = (props: AddEntryFormProps) => {
           <TextField
             variant="standard"
             label="sick leave end date"
+            type="date"
             fullWidth
             value={sickLeaveEndDate}
             onChange={({ target }) => setSickLeaveEndDate(target.value)}
@@ -165,6 +168,11 @@ const AddEntryForm = (props: AddEntryFormProps) => {
       default:
         assertNever(type);
     }
+  };
+
+  const handleDiagnosesCodesChange = (event: SelectChangeEvent) => {
+    const value = event.target.value;
+    setDiagnosisCodes(typeof value === "string" ? value.split(", ") : value);
   };
 
   return (
@@ -198,6 +206,7 @@ const AddEntryForm = (props: AddEntryFormProps) => {
         <TextField
           variant="standard"
           label="Date"
+          type="date"
           fullWidth
           value={date}
           onChange={({target}) => setDate(target.value)}
@@ -210,20 +219,23 @@ const AddEntryForm = (props: AddEntryFormProps) => {
           onChange={({target}) => setSpecialist(target.value)}
         />
         {specificTypeEntryInput()}
-        <TextField
-          sx={{
-            marginBottom: 1
-          }}
-          variant="standard"
-          label="Diagnoses codes"
-          fullWidth
+        <Select
+          label="diagnoses codes"
+          multiple
           value={diagnosisCodes}
-          onChange={({target}) => setDiagnosisCodes(target.value.split(","))}
-        />
+          fullWidth
+          onChange={handleDiagnosesCodesChange}
+          input={<OutlinedInput label="Tag" />}
+          renderValue={(selected) => selected.join(', ')}
+        >
+          {props.diagnoses.map((diagnose) => (
+            <MenuItem key={diagnose.code} value={diagnose.code}>
+              <Checkbox checked={diagnosisCodes.indexOf(diagnose.code) > -1} />
+              <ListItemText primary={diagnose.code} />
+            </MenuItem>
+          ))}
+        </Select>
         <Button
-          // sx={{
-          //   float: "right"
-          // }}
           type="submit"
           variant="contained"
         >Add</Button>
