@@ -77,8 +77,8 @@ const parseBaseEntry = (obj: unknown): BaseEntryWithoutId => {
     date: parseDate(obj.date),
     specialist: parseSpecialist(obj.specialist),
   };
-  if ("diagnosesCodes" in obj) {
-    baseEntry["diagnosisCodes"] = parseDiagnoses(obj.diagnosesCodes);
+  if ("diagnosisCodes" in obj) {
+    baseEntry["diagnosisCodes"] = parseDiagnoses(obj.diagnosisCodes);
   }
   return baseEntry;
 };
@@ -122,7 +122,7 @@ const parseHealthCheckRating = (healthCheckRating: unknown): HealthCheckRating =
 };
 
 const parseDiagnoses = (diagnoses: unknown): Array<Diagnosis["code"]> => {
-  if (!Array.isArray(diagnoses) || !diagnoses.find(d => !isString(d)))
+  if (!Array.isArray(diagnoses) || diagnoses.find(d => !isString(d)))
     throw new Error("bad diagnoses input");
   return diagnoses as Array<Diagnosis["code"]>;
 };

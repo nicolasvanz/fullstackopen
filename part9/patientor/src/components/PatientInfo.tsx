@@ -173,8 +173,9 @@ const PatientInfo = (props: PatientInfoProps) => {
         <AddEntryForm patient={patient}/>
         <h3>Entries</h3>
         {
-          patient.entries.map(entry =>
-            <PatientEntry key={entry.id} entry={entry} diagnoses={diagnoses}/>
+          patient.entries.map(entry => {
+            return <PatientEntry key={entry.id} entry={entry} diagnoses={diagnoses}/>;
+          }
           )
         }
       </div>
