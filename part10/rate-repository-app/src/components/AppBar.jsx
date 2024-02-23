@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 
 const Tab = ({ tabText }) => {
   return <Pressable>
-    <Text style={styles.tab}>{tabText}</Text>
+    <Text fontSize="subheading" style={styles.tab}>{tabText}</Text>
   </Pressable>
 }
 
