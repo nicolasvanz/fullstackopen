@@ -4,13 +4,13 @@ import Text from "./Text"
 import theme from "../theme"
 
 const numberToPrecisionString = (number) => {
-  const precisionMarks = ['', 'k', 'm']
+  const precisionMarks = ['', 'k', 'm', 'b']
   let divideTimes = 0
-  while (number >= 1000) {
+  while (number >= 1000 && divideTimes < precisionMarks.length) {
     divideTimes += 1
     number /= 1000
   }
-  return divideTimes === 0 ? `${number}` : `${number.toFixed(1)}${precisionMarks[divideTimes]}`
+  return divideTimes === 0 ? `${number}` : `${number.toFixed(1)}${precisionMarks[Math.min(divideTimes, precisionMarks.length - 1)]}`
 }
 
 const styles = StyleSheet.create({
