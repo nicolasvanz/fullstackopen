@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",
-    "@expo/metro-config": "^0.17.4",
+    "@expo/config": "^7.0.0",
+    "@expo/metro-config": "^0.10.0",
     "@expo/webpack-config": "^0.17.0",
     "expo": "~46.0.21",
     "expo-status-bar": "~1.4.0",
@@ -29,7 +30,8 @@
     "@babel/eslint-parser": "^7.23.10",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-native": "^4.1.0"
+    "eslint-plugin-react-native": "^4.1.0",
+    "metro": "^0.80.6"
   },
   "private": true
 }

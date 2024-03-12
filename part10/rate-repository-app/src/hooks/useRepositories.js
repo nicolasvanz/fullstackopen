@@ -1,4 +1,6 @@
+import { useQuery } from '@apollo/client'
 import { useState, useEffect } from 'react'
+import { GET_REPOSITORIES } from '../gql/queries'
 
 const useRepositories = () => {
   const [repositories, setRepositories] = useState()
@@ -7,11 +9,16 @@ const useRepositories = () => {
   const fetchRepositories = async () => {
     setLoading(true)
 
-    const response = await fetch("http://150.162.151.86:5000/api/repositories")
-    const json = await response.json()
+    const { loading, error, data } = useQuery(GET_REPOSITORIES, {
+      nextFetchPolicy: "cache-and-network"
+    })
 
-    setLoading(false)
-    setRepositories(json)
+    if (error) {
+      console.log(error.message)
+    }
+
+    setLoading(false || loading)
+    setRepositories(data)
   }
 
   useEffect(() => {
